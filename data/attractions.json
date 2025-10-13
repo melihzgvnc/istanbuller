@@ -1,0 +1,200 @@
+{
+  "attractions": [
+    {
+      "id": "hagia-sophia",
+      "name": "Hagia Sophia",
+      "description": "A magnificent architectural marvel that has served as a church, mosque, and museum throughout its 1,500-year history. Built in 537 AD by Byzantine Emperor Justinian I, it features stunning Byzantine mosaics, a massive dome that seems to float on light, and intricate Islamic calligraphy. The building represents a unique blend of Christian and Islamic art and architecture, making it one of the most significant monuments in world history.",
+      "summary": "Byzantine masterpiece, iconic dome, 1500+ years old",
+      "imageUrl": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b",
+      "coordinates": {
+        "latitude": 41.0086,
+        "longitude": 28.9802
+      },
+      "district": "Sultanahmet",
+      "category": "Historical",
+      "address": "Sultan Ahmet, Ayasofya Meydanı No:1, 34122 Fatih/İstanbul"
+    },
+    {
+      "id": "blue-mosque",
+      "name": "Blue Mosque (Sultan Ahmed Mosque)",
+      "description": "Built between 1609 and 1616 during the rule of Ahmed I, the Blue Mosque is famous for its stunning blue İznik tiles that adorn its interior walls. With six minarets and a cascading series of domes, it remains an active mosque and one of Istanbul's most iconic landmarks. The mosque's courtyard is as large as the mosque itself, and the interior features over 20,000 handmade ceramic tiles in various tulip designs.",
+      "summary": "Six minarets, 20,000 blue tiles, active mosque",
+      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "coordinates": {
+        "latitude": 41.0054,
+        "longitude": 28.9768
+      },
+      "district": "Sultanahmet",
+      "category": "Mosque",
+      "address": "Sultan Ahmet, Atmeydanı Cd. No:7, 34122 Fatih/İstanbul"
+    },
+    {
+      "id": "topkapi-palace",
+      "name": "Topkapı Palace",
+      "description": "The primary residence of Ottoman sultans for approximately 400 years (1465-1856). This sprawling palace complex covers 700,000 square meters and houses an impressive collection of Ottoman treasures, including the famous Topkapı Dagger and the Spoonmaker's Diamond. Visitors can explore the Imperial Treasury, the Sacred Relics section, and enjoy breathtaking views of the Bosphorus from the palace gardens.",
+      "summary": "Ottoman palace, imperial treasury, Bosphorus views",
+      "imageUrl": "https://images.unsplash.com/photo-1609137144813-7d9921338f24",
+      "coordinates": {
+        "latitude": 41.0115,
+        "longitude": 28.9833
+      },
+      "district": "Sultanahmet",
+      "category": "Palace",
+      "address": "Cankurtaran, 34122 Fatih/İstanbul"
+    },
+    {
+      "id": "grand-bazaar",
+      "name": "Grand Bazaar (Kapalıçarşı)",
+      "description": "One of the largest and oldest covered markets in the world, with over 4,000 shops spread across 61 covered streets. Dating back to 1461, the Grand Bazaar attracts between 250,000 and 400,000 visitors daily. Here you can find everything from Turkish carpets and ceramics to jewelry, spices, and traditional textiles. The bazaar is a labyrinth of colors, scents, and sounds that offers an authentic Turkish shopping experience.",
+      "summary": "4,000 shops, historic market, carpets & spices",
+      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "coordinates": {
+        "latitude": 41.0108,
+        "longitude": 28.9680
+      },
+      "district": "Sultanahmet",
+      "category": "Bazaar",
+      "address": "Beyazıt, 34126 Fatih/İstanbul"
+    },
+    {
+      "id": "galata-tower",
+      "name": "Galata Tower",
+      "description": "A medieval stone tower built in 1348 that dominates the skyline of the Galata district. Standing 67 meters tall, the tower offers panoramic 360-degree views of Istanbul, including the Golden Horn, Bosphorus, and the historic peninsula. Originally built as a watchtower, it now serves as a museum and observation deck. The surrounding Galata neighborhood is filled with charming cafes, art galleries, and boutique shops.",
+      "summary": "Medieval tower, 360° views, 67m tall",
+      "imageUrl": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200",
+      "coordinates": {
+        "latitude": 41.0256,
+        "longitude": 28.9741
+      },
+      "district": "Beyoğlu",
+      "category": "Historical",
+      "address": "Bereketzade, Galata Kulesi, 34421 Beyoğlu/İstanbul"
+    },
+    {
+      "id": "istiklal-street",
+      "name": "İstiklal Avenue",
+      "description": "Istanbul's most famous pedestrian street, stretching 1.4 kilometers from Taksim Square to Galata Tower. This bustling avenue is lined with historic buildings, international shops, art galleries, cinemas, theaters, libraries, cafes, and restaurants. The nostalgic red tram runs along the street, adding to its charm. İstiklal is the heart of modern Istanbul's cultural and entertainment scene, attracting millions of visitors annually.",
+      "summary": "Pedestrian street, shopping, historic tram",
+      "imageUrl": "https://images.unsplash.com/photo-1527838832700-5059252407fa",
+      "coordinates": {
+        "latitude": 41.0369,
+        "longitude": 28.9784
+      },
+      "district": "Beyoğlu",
+      "category": "Historical",
+      "address": "İstiklal Cd., Beyoğlu/İstanbul"
+    },
+    {
+      "id": "pera-museum",
+      "name": "Pera Museum",
+      "description": "A private museum housed in a historic building in the Tepebaşı quarter, featuring a rich collection of Orientalist paintings, Anatolian weights and measures, and Kütahya tiles and ceramics. The museum is particularly famous for housing 'The Tortoise Trainer' by Osman Hamdi Bey, one of Turkey's most celebrated paintings. The museum also hosts temporary exhibitions of international contemporary art.",
+      "summary": "Orientalist art, Turkish paintings, contemporary exhibits",
+      "imageUrl": "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3",
+      "coordinates": {
+        "latitude": 41.0318,
+        "longitude": 28.9746
+      },
+      "district": "Beyoğlu",
+      "category": "Museum",
+      "address": "Asmalı Mescit, Meşrutiyet Cd. No:65, 34430 Beyoğlu/İstanbul"
+    },
+    {
+      "id": "dolmabahce-palace",
+      "name": "Dolmabahçe Palace",
+      "description": "A stunning 19th-century palace that served as the main administrative center of the Ottoman Empire from 1856 to 1887 and 1909 to 1922. Built along the Bosphorus shore, it blends traditional Ottoman architecture with European Baroque, Rococo, and Neoclassical styles. The palace features 285 rooms, 46 halls, and houses the world's largest Bohemian crystal chandelier, a gift from Queen Victoria. Mustafa Kemal Atatürk, founder of modern Turkey, spent his final days here.",
+      "summary": "Bosphorus palace, crystal chandelier, Ottoman grandeur",
+      "imageUrl": "https://images.unsplash.com/photo-1609137144813-7d9921338f24",
+      "coordinates": {
+        "latitude": 41.0391,
+        "longitude": 29.0003
+      },
+      "district": "Beşiktaş",
+      "category": "Palace",
+      "address": "Vişnezade, Dolmabahçe Cd., 34357 Beşiktaş/İstanbul"
+    },
+    {
+      "id": "kadikoy-market",
+      "name": "Kadıköy Market",
+      "description": "A vibrant local market on the Asian side of Istanbul, offering an authentic Turkish shopping experience away from tourist crowds. The market is famous for its fresh produce, fish, spices, cheeses, olives, and traditional Turkish delicacies. The surrounding streets are filled with trendy cafes, vintage shops, and street art. Kadıköy represents the modern, bohemian side of Istanbul and is a favorite among locals.",
+      "summary": "Local market, fresh produce, Asian side charm",
+      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
+      "coordinates": {
+        "latitude": 40.9904,
+        "longitude": 29.0258
+      },
+      "district": "Kadıköy",
+      "category": "Bazaar",
+      "address": "Kadıköy, Güneşlibahçe Sk., 34710 Kadıköy/İstanbul"
+    },
+    {
+      "id": "moda-coast",
+      "name": "Moda Coastal Park",
+      "description": "A scenic waterfront promenade in the Moda neighborhood, offering stunning views of the Marmara Sea and the historic peninsula. This peaceful area is perfect for leisurely walks, picnics, and watching the sunset. The park features a historic pier, tea gardens, and is surrounded by charming Art Nouveau buildings. Moda is known for its relaxed atmosphere and is a favorite spot for locals to escape the city's hustle.",
+      "summary": "Waterfront park, sunset views, local favorite",
+      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "coordinates": {
+        "latitude": 40.9833,
+        "longitude": 29.0297
+      },
+      "district": "Kadıköy",
+      "category": "Park",
+      "address": "Caferağa, Moda Cd., 34710 Kadıköy/İstanbul"
+    },
+    {
+      "id": "maiden-tower",
+      "name": "Maiden's Tower (Kız Kulesi)",
+      "description": "An iconic tower located on a small islet in the Bosphorus, off the coast of Üsküdar. Dating back to ancient times, the tower has served various purposes including a lighthouse, quarantine station, and customs checkpoint. Today it houses a restaurant and cafe, accessible by boat. The tower is surrounded by numerous legends, the most famous being the story of a princess locked away to prevent a prophecy. It offers spectacular views of both the European and Asian sides of Istanbul.",
+      "summary": "Bosphorus islet, ancient tower, legendary views",
+      "imageUrl": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200",
+      "coordinates": {
+        "latitude": 41.0211,
+        "longitude": 29.0041
+      },
+      "district": "Üsküdar",
+      "category": "Historical",
+      "address": "Salacak, Üsküdar/İstanbul"
+    },
+    {
+      "id": "camlica-hill",
+      "name": "Çamlıca Hill",
+      "description": "The highest point in Istanbul, offering breathtaking panoramic views of the entire city, the Bosphorus, and the Marmara Sea. The hill features beautifully landscaped gardens, walking paths, cafes, and picnic areas. It's particularly popular during sunset and evening hours when the city lights create a magical atmosphere. The recently built Çamlıca Mosque, one of Turkey's largest mosques, adds to the hill's impressive skyline.",
+      "summary": "Highest point, panoramic views, gardens & mosque",
+      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "coordinates": {
+        "latitude": 41.0222,
+        "longitude": 29.0661
+      },
+      "district": "Üsküdar",
+      "category": "Viewpoint",
+      "address": "Kısıklı, Çamlıca Tepesi, 34692 Üsküdar/İstanbul"
+    },
+    {
+      "id": "basilica-cistern",
+      "name": "Basilica Cistern",
+      "description": "An ancient underground water reservoir built in the 6th century during the reign of Byzantine Emperor Justinian I. This atmospheric cistern features 336 marble columns, each 9 meters high, arranged in 12 rows. The most famous features are the two Medusa head column bases, mysteriously placed upside down and sideways. The cistern's dim lighting, dripping water, and classical music create an otherworldly ambiance. It could store up to 80,000 cubic meters of water.",
+      "summary": "Underground cistern, 336 columns, Medusa heads",
+      "imageUrl": "https://images.unsplash.com/photo-1609137144813-7d9921338f24",
+      "coordinates": {
+        "latitude": 41.0084,
+        "longitude": 28.9778
+      },
+      "district": "Sultanahmet",
+      "category": "Historical",
+      "address": "Alemdar, Yerebatan Cd. 1/3, 34110 Fatih/İstanbul"
+    },
+    {
+      "id": "spice-bazaar",
+      "name": "Spice Bazaar (Egyptian Bazaar)",
+      "description": "A historic covered market built in 1664 as part of the New Mosque complex. The L-shaped bazaar is filled with vendors selling spices, Turkish delight, dried fruits, nuts, caviar, and traditional Turkish products. The air is filled with the aroma of exotic spices like saffron, sumac, and cumin. It's smaller and less overwhelming than the Grand Bazaar, making it perfect for purchasing authentic Turkish food products and souvenirs.",
+      "summary": "Historic spice market, Turkish delight, aromatic",
+      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
+      "coordinates": {
+        "latitude": 41.0166,
+        "longitude": 28.9703
+      },
+      "district": "Sultanahmet",
+      "category": "Bazaar",
+      "address": "Rüstem Paşa, Erzak Ambarı Sok. No:92, 34116 Fatih/İstanbul"
+    }
+  ]
+}

@@ -1,98 +1,256 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Text, StatusBar, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { useLocation } from '@/hooks/useLocation';
+import { useAttractions } from '@/hooks/useAttractions';
+import LocationPermission from '@/components/location/LocationPermission';
+import AttractionList from '@/components/attractions/AttractionList';
+import { DistrictPicker } from '@/components/district/DistrictPicker';
+import DistrictSelectionPrompt from '@/components/district/DistrictSelectionPrompt';
+import { ManualSelectionIndicator } from '@/components/district/ManualSelectionIndicator';
+import Theme from '@/constants/theme';
+import { IstanbulDistrict } from '@/types';
+import { getDistrictConfig } from '@/constants/Districts';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  
+  // District picker visibility state
+  const [isPickerVisible, setIsPickerVisible] = useState(false);
+  
+  // Track if we've already shown the notification for this district entry
+  const notificationShownRef = useRef<IstanbulDistrict | null>(null);
+  
+  // Use location hook for location and district detection
+  const {
+    location,
+    district,
+    loading: locationLoading,
+    error: locationError,
+    permissionGranted,
+    refreshLocation,
+    manuallySelectedDistrict,
+    isManualSelection,
+    lastAutoDetectedDistrict,
+    setManualDistrict,
+    clearManualSelection,
+  } = useLocation();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  // Calculate reference point for distance calculations
+  // When manual selection is active, use district center; otherwise use user location
+  const referencePoint = React.useMemo(() => {
+    if (isManualSelection && district) {
+      const districtConfig = getDistrictConfig(district);
+      return districtConfig?.center || null;
+    }
+    return null; // Use user location (default behavior)
+  }, [isManualSelection, district]);
+
+  // Use attractions hook for filtered attractions
+  const {
+    attractions,
+    loading: attractionsLoading,
+    error: attractionsError,
+    refresh: refreshAttractions,
+  } = useAttractions({
+    district,
+    userLocation: location,
+    referencePoint: referencePoint || undefined,
+    isManualSelection,
+  });
+
+  // Handle permission granted
+  const handlePermissionGranted = () => {
+    // Permission is handled by the hook, just refresh location
+    refreshLocation();
+  };
+
+  // Handle permission denied
+  const handlePermissionDenied = () => {
+    // User denied permission, show appropriate message
+    console.log('Location permission denied');
+  };
+
+  // Handle refresh - refresh both location and attractions
+  const handleRefresh = () => {
+    refreshLocation();
+    refreshAttractions();
+  };
+
+  // Handle attraction press - navigate to detail screen
+  const handleAttractionPress = (id: string) => {
+    router.push(`/attraction/${id}`);
+  };
+
+  // Handle district selection from picker
+  const handleDistrictSelect = async (selectedDistrict: IstanbulDistrict) => {
+    await setManualDistrict(selectedDistrict);
+    setIsPickerVisible(false);
+  };
+
+  // Handle picker dismiss
+  const handlePickerDismiss = () => {
+    setIsPickerVisible(false);
+  };
+
+  // Handle "Choose Manually" action from prompt
+  const handleChooseManually = () => {
+    setIsPickerVisible(true);
+  };
+
+  // Handle "Retry Location" action from prompt
+  const handleRetryLocation = () => {
+    refreshLocation();
+  };
+
+  // Handle clear manual selection
+  const handleClearSelection = async () => {
+    await clearManualSelection();
+    // Reset notification tracking when clearing manual selection
+    notificationShownRef.current = null;
+  };
+
+  // Handle switch to auto-detection
+  const handleSwitchToAuto = async () => {
+    await clearManualSelection();
+    notificationShownRef.current = null;
+  };
+
+  // Handle keep manual selection
+  const handleKeepManual = () => {
+    // User chose to keep manual selection, don't show notification again for this district
+    if (lastAutoDetectedDistrict) {
+      notificationShownRef.current = lastAutoDetectedDistrict;
+    }
+  };
+
+  // Detect when user enters a district boundary with manual selection active
+  useEffect(() => {
+    // Check if:
+    // 1. Manual selection is active
+    // 2. Auto-detection found a valid district
+    // 3. Auto-detected district differs from manual selection
+    // 4. We haven't shown notification for this district yet
+    if (
+      isManualSelection &&
+      lastAutoDetectedDistrict &&
+      lastAutoDetectedDistrict !== manuallySelectedDistrict &&
+      notificationShownRef.current !== lastAutoDetectedDistrict
+    ) {
+      // Show alert with options
+      Alert.alert(
+        'District Detected',
+        `You're now in ${lastAutoDetectedDistrict}. Would you like to switch to automatic detection?`,
+        [
+          {
+            text: 'Keep Manual',
+            style: 'cancel',
+            onPress: handleKeepManual,
+          },
+          {
+            text: 'Switch to Auto',
+            onPress: handleSwitchToAuto,
+          },
+        ],
+        { cancelable: true, onDismiss: handleKeepManual }
+      );
+      
+      // Mark that we've shown the notification for this district
+      notificationShownRef.current = lastAutoDetectedDistrict;
+    }
+  }, [isManualSelection, lastAutoDetectedDistrict, manuallySelectedDistrict]);
+
+  // Show location permission screen if permission not granted
+  if (!permissionGranted) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.background} />
+        <LocationPermission
+          onPermissionGranted={handlePermissionGranted}
+          onPermissionDenied={handlePermissionDenied}
+        />
+      </SafeAreaView>
+    );
+  }
+
+  // Show error message if location error exists
+  const displayError = locationError || attractionsError;
+  const isLoading = locationLoading || attractionsLoading;
+
+  // Determine if we should show the district selection prompt
+  // Show when: location is available, no district detected, and no manual selection active
+  const shouldShowPrompt = location && !district && !isManualSelection && !locationLoading;
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.background} />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>Nearby Attractions</Text>
+        {district && !isManualSelection && (
+          <Text style={styles.subtitle}>
+            {district}
+          </Text>
+        )}
+        {isManualSelection && manuallySelectedDistrict && (
+          <ManualSelectionIndicator
+            district={manuallySelectedDistrict}
+            onClearSelection={handleClearSelection}
+          />
+        )}
+      </View>
+
+      {/* Show District Selection Prompt when no district detected */}
+      {shouldShowPrompt ? (
+        <DistrictSelectionPrompt
+          onSelectDistrict={handleChooseManually}
+          onRetryLocation={handleRetryLocation}
+        />
+      ) : (
+        /* Attraction List */
+        <AttractionList
+          attractions={attractions}
+          loading={isLoading}
+          error={displayError}
+          onRefresh={handleRefresh}
+          onAttractionPress={handleAttractionPress}
+        />
+      )}
+
+      {/* District Picker Modal */}
+      <DistrictPicker
+        visible={isPickerVisible}
+        onSelect={handleDistrictSelect}
+        onDismiss={handlePickerDismiss}
+        currentDistrict={district}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: Theme.colors.surface,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  header: {
+    paddingHorizontal: Theme.spacing.base,
+    paddingVertical: Theme.spacing.base,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.border.default,
+    backgroundColor: Theme.colors.background,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  title: {
+    fontSize: Theme.typography.fontSize['3xl'],
+    fontWeight: Theme.typography.fontWeight.bold,
+    color: Theme.colors.text.primary,
+    marginBottom: Theme.spacing.xs,
+  },
+  subtitle: {
+    fontSize: Theme.typography.fontSize.base,
+    color: Theme.colors.text.secondary,
+    fontWeight: Theme.typography.fontWeight.medium,
   },
 });

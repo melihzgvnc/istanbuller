@@ -1,0 +1,58 @@
+{
+  "districts": [
+    {
+      "name": "Sultanahmet",
+      "center": {
+        "latitude": 41.0082,
+        "longitude": 28.9784
+      },
+      "radiusKm": 2.5,
+      "description": "Historic heart of Istanbul, home to major Byzantine and Ottoman monuments"
+    },
+    {
+      "name": "Beyoğlu",
+      "center": {
+        "latitude": 41.0369,
+        "longitude": 28.9784
+      },
+      "radiusKm": 3.0,
+      "description": "Modern cultural center with İstiklal Avenue, Galata Tower, and vibrant nightlife"
+    },
+    {
+      "name": "Beşiktaş",
+      "center": {
+        "latitude": 41.0422,
+        "longitude": 29.0078
+      },
+      "radiusKm": 2.8,
+      "description": "Bosphorus district featuring palaces, parks, and waterfront promenades"
+    },
+    {
+      "name": "Kadıköy",
+      "center": {
+        "latitude": 40.9904,
+        "longitude": 29.0258
+      },
+      "radiusKm": 3.5,
+      "description": "Vibrant Asian side district known for markets, cafes, and bohemian atmosphere"
+    },
+    {
+      "name": "Üsküdar",
+      "center": {
+        "latitude": 41.0225,
+        "longitude": 29.0150
+      },
+      "radiusKm": 3.2,
+      "description": "Historic Asian side district with mosques, hills, and Bosphorus views"
+    },
+    {
+      "name": "Ortaköy",
+      "center": {
+        "latitude": 41.0553,
+        "longitude": 29.0264
+      },
+      "radiusKm": 1.5,
+      "description": "Charming Bosphorus neighborhood famous for its mosque and waterfront cafes"
+    }
+  ]
+}
