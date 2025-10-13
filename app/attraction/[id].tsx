@@ -23,6 +23,7 @@ import OptimizedImage from '@/components/ui/OptimizedImage';
 import { HERO_IMAGE_CONFIG } from '@/constants/ImageConfig';
 import Theme from '@/constants/theme';
 import { mediumHaptic } from '@/utils/haptics';
+import { openGoogleMapsDirections } from '@/utils/navigation';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -30,7 +31,7 @@ export default function AttractionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { location } = useLocation();
-  
+
   const [attraction, setAttraction] = useState<AttractionWithDistance | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,10 +71,13 @@ export default function AttractionDetailScreen() {
           return;
         }
 
-        // Enrich with distance if user location is available
-        if (location) {
+        // Always use user's actual location for distance calculations
+        const calculationPoint = location;
+
+        // Enrich with distance if calculation point is available
+        if (calculationPoint) {
           try {
-            const enrichedAttractions = enrichWithDistance([attractionData], location);
+            const enrichedAttractions = enrichWithDistance([attractionData], calculationPoint);
             if (enrichedAttractions && enrichedAttractions.length > 0) {
               setAttraction(enrichedAttractions[0]);
             } else {
@@ -143,6 +147,18 @@ export default function AttractionDetailScreen() {
     backButtonScale.value = withSpring(1, { damping: 15, stiffness: 300 });
   };
 
+  // Handle navigation to attraction
+  const handleNavigate = () => {
+    mediumHaptic();
+    if (attraction) {
+      openGoogleMapsDirections(
+        attraction.coordinates,
+        attraction.name,
+        location || undefined
+      );
+    }
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -173,77 +189,90 @@ export default function AttractionDetailScreen() {
     <ErrorBoundary>
       <View style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-        
+
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Hero Image */}
-        <View style={styles.imageContainer}>
-          <OptimizedImage
-            source={{ uri: attraction.imageUrl }}
-            style={styles.heroImage}
-            fallbackIcon="image-outline"
-            fallbackIconSize={80}
-            fallbackText="Image unavailable"
-            showLoadingIndicator={true}
-            {...HERO_IMAGE_CONFIG}
-          />
-          
-          {/* Back Button Overlay */}
-          <AnimatedPressable
-            style={[styles.backButtonOverlay, backButtonAnimatedStyle]}
-            onPress={handleBack}
-            onPressIn={handleBackPressIn}
-            onPressOut={handleBackPressOut}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            accessibilityHint="Double tap to return to the previous screen"
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </AnimatedPressable>
-        </View>
+          {/* Hero Image */}
+          <View style={styles.imageContainer}>
+            <OptimizedImage
+              source={{ uri: attraction.imageUrl }}
+              style={styles.heroImage}
+              fallbackIcon="image-outline"
+              fallbackIconSize={80}
+              fallbackText="Image unavailable"
+              showLoadingIndicator={true}
+              {...HERO_IMAGE_CONFIG}
+            />
 
-        {/* Content */}
-        <Animated.View entering={FadeInDown.duration(400).delay(100)} style={styles.content}>
-          {/* Header Section */}
-          <View style={styles.headerSection}>
-            <Text style={styles.name}>{attraction.name}</Text>
-            <View style={styles.metaRow}>
-              <View style={styles.categoryBadge}>
-                <Ionicons name="pricetag" size={16} color={Theme.colors.primary[500]} />
-                <Text style={styles.categoryText}>{attraction.category}</Text>
+            {/* Back Button Overlay */}
+            <AnimatedPressable
+              style={[styles.backButtonOverlay, backButtonAnimatedStyle]}
+              onPress={handleBack}
+              onPressIn={handleBackPressIn}
+              onPressOut={handleBackPressOut}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
+              accessibilityHint="Double tap to return to the previous screen"
+            >
+              <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+            </AnimatedPressable>
+          </View>
+
+          {/* Content */}
+          <Animated.View entering={FadeInDown.duration(400).delay(100)} style={styles.content}>
+            {/* Header Section */}
+            <View style={styles.headerSection}>
+              <Text style={styles.name}>{attraction.name}</Text>
+              <View style={styles.metaRow}>
+                <View style={styles.categoryBadge}>
+                  <Ionicons name="pricetag" size={16} color={Theme.colors.primary[500]} />
+                  <Text style={styles.categoryText}>{attraction.category}</Text>
+                </View>
+                <View style={styles.districtBadge}>
+                  <Ionicons name="location" size={16} color={Theme.colors.success[500]} />
+                  <Text style={styles.districtText}>{attraction.district}</Text>
+                </View>
               </View>
-              <View style={styles.districtBadge}>
-                <Ionicons name="location" size={16} color={Theme.colors.success[500]} />
-                <Text style={styles.districtText}>{attraction.district}</Text>
+            </View>
+
+            {/* Distance Information */}
+            {location && attraction.distance.walkingDistanceKm > 0 && (
+              <View style={styles.distanceSection}>
+                <Text style={styles.sectionTitle}>Distance from You</Text>
+                <DistanceBadge distance={attraction.distance} />
+              </View>
+            )}
+
+            {/* Description Section */}
+            <View style={styles.descriptionSection}>
+              <Text style={styles.sectionTitle}>About</Text>
+              <Text style={styles.description}>{attraction.description}</Text>
+            </View>
+
+            {/* Address Section */}
+            <View style={styles.addressSection}>
+              <Text style={styles.sectionTitle}>Address</Text>
+              <View style={styles.addressRow}>
+                <Ionicons name="navigate" size={20} color={Theme.colors.text.secondary} />
+                <Text style={styles.address}>{attraction.address}</Text>
               </View>
             </View>
-          </View>
 
-          {/* Distance Information */}
-          {location && attraction.distance.walkingDistanceKm > 0 && (
-            <View style={styles.distanceSection}>
-              <Text style={styles.sectionTitle}>Distance from You</Text>
-              <DistanceBadge distance={attraction.distance} />
-            </View>
-          )}
-
-          {/* Description Section */}
-          <View style={styles.descriptionSection}>
-            <Text style={styles.sectionTitle}>About</Text>
-            <Text style={styles.description}>{attraction.description}</Text>
-          </View>
-
-          {/* Address Section */}
-          <View style={styles.addressSection}>
-            <Text style={styles.sectionTitle}>Address</Text>
-            <View style={styles.addressRow}>
-              <Ionicons name="navigate" size={20} color={Theme.colors.text.secondary} />
-              <Text style={styles.address}>{attraction.address}</Text>
-            </View>
-          </View>
-        </Animated.View>
-      </ScrollView>
-    </View>
+            {/* Navigation Button */}
+            <Pressable
+              style={styles.navigationButton}
+              onPress={handleNavigate}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Take me there"
+              accessibilityHint="Opens Google Maps with directions to this attraction"
+            >
+              <Ionicons name="navigate-circle" size={24} color="#FFFFFF" />
+              <Text style={styles.navigationButtonText}>Take Me There</Text>
+            </Pressable>
+          </Animated.View>
+        </ScrollView>
+      </View>
     </ErrorBoundary>
   );
 }
@@ -350,7 +379,6 @@ const styles = StyleSheet.create({
   },
   addressSection: {
     gap: Theme.spacing.md,
-    paddingBottom: Theme.spacing.xl,
   },
   addressRow: {
     flexDirection: 'row',
@@ -362,6 +390,23 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.fontSize.base,
     color: Theme.colors.text.secondary,
     lineHeight: 24,
+  },
+  navigationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Theme.spacing.md,
+    backgroundColor: Theme.colors.primary[500],
+    paddingVertical: Theme.spacing.base,
+    paddingHorizontal: Theme.spacing.xl,
+    borderRadius: Theme.borderRadius.lg,
+    minHeight: Theme.accessibility.minTouchTarget,
+    marginBottom: Theme.spacing.xl,
+  },
+  navigationButtonText: {
+    fontSize: Theme.typography.fontSize.lg,
+    fontWeight: Theme.typography.fontWeight.bold,
+    color: Theme.colors.text.inverse,
   },
   errorText: {
     fontSize: Theme.typography.fontSize.lg,

@@ -54,7 +54,7 @@ export default function AttractionCard({ attraction, onPress }: AttractionCardPr
         fallbackText="Image unavailable"
         {...ATTRACTION_CARD_IMAGE_CONFIG}
       />
-      
+
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.name} numberOfLines={2}>
@@ -62,11 +62,11 @@ export default function AttractionCard({ attraction, onPress }: AttractionCardPr
           </Text>
           <Text style={styles.category}>{attraction.category}</Text>
         </View>
-        
+
         <Text style={styles.summary} numberOfLines={2}>
           {attraction.summary}
         </Text>
-        
+
         <DistanceBadge distance={attraction.distance} />
       </View>
     </AnimatedPressable>

@@ -69,9 +69,9 @@ export function useAttractions({
           throw new Error('Invalid attraction data received');
         }
 
-        // Determine the reference point for distance calculations
-        // Priority: referencePoint (manual selection) > userLocation (auto-detection)
-        const calculationPoint = referencePoint || userLocation;
+        // Always use user's actual location for distance calculations
+        // Manual selection only affects which district's attractions are shown
+        const calculationPoint = userLocation;
 
         // If no calculation point available, return attractions without distance info
         if (!calculationPoint) {

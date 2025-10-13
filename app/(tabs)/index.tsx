@@ -11,17 +11,16 @@ import DistrictSelectionPrompt from '@/components/district/DistrictSelectionProm
 import { ManualSelectionIndicator } from '@/components/district/ManualSelectionIndicator';
 import Theme from '@/constants/theme';
 import { IstanbulDistrict } from '@/types';
-import { getDistrictConfig } from '@/constants/Districts';
 
 export default function HomeScreen() {
   const router = useRouter();
-  
+
   // District picker visibility state
   const [isPickerVisible, setIsPickerVisible] = useState(false);
-  
+
   // Track if we've already shown the notification for this district entry
   const notificationShownRef = useRef<IstanbulDistrict | null>(null);
-  
+
   // Use location hook for location and district detection
   const {
     location,
@@ -37,17 +36,9 @@ export default function HomeScreen() {
     clearManualSelection,
   } = useLocation();
 
-  // Calculate reference point for distance calculations
-  // When manual selection is active, use district center; otherwise use user location
-  const referencePoint = React.useMemo(() => {
-    if (isManualSelection && district) {
-      const districtConfig = getDistrictConfig(district);
-      return districtConfig?.center || null;
-    }
-    return null; // Use user location (default behavior)
-  }, [isManualSelection, district]);
-
   // Use attractions hook for filtered attractions
+  // Manual selection only affects which district's attractions are shown
+  // Distance calculations always use actual user location for accurate ETAs
   const {
     attractions,
     loading: attractionsLoading,
@@ -56,7 +47,7 @@ export default function HomeScreen() {
   } = useAttractions({
     district,
     userLocation: location,
-    referencePoint: referencePoint || undefined,
+    referencePoint: undefined, // Always use user location for distance calculations
     isManualSelection,
   });
 
@@ -155,7 +146,7 @@ export default function HomeScreen() {
         ],
         { cancelable: true, onDismiss: handleKeepManual }
       );
-      
+
       // Mark that we've shown the notification for this district
       notificationShownRef.current = lastAutoDetectedDistrict;
     }
@@ -185,7 +176,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.background} />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Nearby Attractions</Text>
