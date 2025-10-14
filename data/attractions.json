@@ -1,4 +1,4 @@
-{
+﻿{
   "attractions": [
     {
       "id": "hagia-sophia",
@@ -50,7 +50,7 @@
       "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
       "coordinates": {
         "latitude": 41.0108,
-        "longitude": 28.9680
+        "longitude": 28.968
       },
       "district": "Sultanahmet",
       "category": "Bazaar",
@@ -195,6 +195,146 @@
       "district": "Sultanahmet",
       "category": "Bazaar",
       "address": "Rüstem Paşa, Erzak Ambarı Sok. No:92, 34116 Fatih/İstanbul"
+    },
+    {
+      "id": "galata-bridge",
+      "name": "Galata Bridge",
+      "description": "A famous bridge spanning the Golden Horn, connecting Eminönü and Karaköy. The bridge is lined with fishermen, restaurants beneath, and offers stunning views of the historic peninsula and Bosphorus. It's a great spot for photos and watching the sunset.",
+      "summary": "Golden Horn bridge, sunset views, fishing",
+      "imageUrl": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92",
+      "coordinates": {
+        "latitude": 41.019,
+        "longitude": 28.9716
+      },
+      "district": "Eminönü",
+      "category": "Historical",
+      "address": "Galata Köprüsü, Eminönü, Fatih/İstanbul"
+    },
+    {
+      "id": "new-mosque",
+      "name": "New Mosque (Yeni Camii)",
+      "description": "An Ottoman imperial mosque located in the Eminönü district. Completed in 1665, it's one of Istanbul's most prominent landmarks with its majestic domes and minarets. The mosque is part of a large complex that includes the Spice Bazaar.",
+      "summary": "Ottoman mosque, domes & minarets, Spice Bazaar complex",
+      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "coordinates": {
+        "latitude": 41.0171,
+        "longitude": 28.9714
+      },
+      "district": "Eminönü",
+      "category": "Mosque",
+      "address": "Rüstem Paşa, Yeni Cami Cd., 34116 Fatih/İstanbul"
+    },
+    {
+      "id": "rumeli-hisari",
+      "name": "Rumeli Fortress (Rumeli Hisarı)",
+      "description": "A 15th-century fortress built by Sultan Mehmed II before the conquest of Constantinople. Overlooking the Bosphorus, the fortress has towers, walls, and gardens offering stunning views. Today it's an open-air museum and occasional concert venue.",
+      "summary": "15th-century fortress, Bosphorus views, museum",
+      "imageUrl": "https://images.unsplash.com/photo-1599983423774-7f6d2f8e798b",
+      "coordinates": {
+        "latitude": 41.0841,
+        "longitude": 29.0571
+      },
+      "district": "Rumeli Hisarı",
+      "category": "Historical",
+      "address": "Yahya Kemal Cd. No:42, Rumeli Hisarı, Sarıyer/İstanbul"
+    },
+    {
+      "id": "bebek-coast",
+      "name": "Bebek Coast",
+      "description": "A beautiful Bosphorus neighborhood promenade, popular for scenic walks, cafes, and sea views. Bebek is one of the most elegant areas of Istanbul.",
+      "summary": "Promenade, Bosphorus view, elegant cafes",
+      "imageUrl": "https://images.unsplash.com/photo-1599983423774-7f6d2f8e798b",
+      "coordinates": {
+        "latitude": 41.074,
+        "longitude": 29.042
+      },
+      "district": "Bebek",
+      "category": "Park",
+      "address": "Bebek, Beşiktaş/İstanbul"
+    },
+    {
+      "id": "ortakoy-mosque",
+      "name": "Ortaköy Mosque (Büyük Mecidiye Camii)",
+      "description": "A Baroque-style mosque built in the 19th century, located on the Bosphorus shore in Ortaköy. It's one of the most photographed landmarks of Istanbul, offering spectacular waterfront views.",
+      "summary": "Baroque mosque, Bosphorus views, iconic landmark",
+      "imageUrl": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b",
+      "coordinates": {
+        "latitude": 41.0557,
+        "longitude": 29.0265
+      },
+      "district": "Ortaköy",
+      "category": "Mosque",
+      "address": "Mecidiye, Mecidiye Köyü Cd. No:2, Beşiktaş/İstanbul"
+    },
+    {
+      "id": "istiklal-tram",
+      "name": "Historic Tram on İstiklal Avenue",
+      "description": "A nostalgic red tram that runs along İstiklal Avenue between Taksim Square and Tünel. It's a symbol of the district and offers a charming way to see the lively street.",
+      "summary": "Historic tram, İstiklal Avenue, Taksim to Tünel",
+      "imageUrl": "https://images.unsplash.com/photo-1527838832700-5059252407fa",
+      "coordinates": {
+        "latitude": 41.037,
+        "longitude": 28.9856
+      },
+      "district": "Taksim",
+      "category": "Transportation",
+      "address": "İstiklal Cd., Beyoğlu/İstanbul"
+    },
+    {
+      "id": "takim-square",
+      "name": "Taksim Square",
+      "description": "The heart of modern Istanbul, Taksim Square is surrounded by hotels, shops, and restaurants. It's a major transportation hub and the site of the Republic Monument. The area hosts public events, celebrations, and cultural activities.",
+      "summary": "Central square, Republic Monument, cultural hub",
+      "imageUrl": "https://images.unsplash.com/photo-1527838832700-5059252407fa",
+      "coordinates": {
+        "latitude": 41.037,
+        "longitude": 28.9856
+      },
+      "district": "Taksim",
+      "category": "Square",
+      "address": "Taksim Meydanı, Beyoğlu/İstanbul"
+    },
+    {
+      "id": "princes-islands",
+      "name": "Princes' Islands",
+      "description": "An archipelago of nine islands in the Marmara Sea, famous for its beaches, historic mansions, pine forests, and tranquil atmosphere. The islands are car-free, with bicycles and electric vehicles used for transport. Büyükada is the largest and most visited.",
+      "summary": "Car-free islands, beaches, historic mansions",
+      "imageUrl": "https://images.unsplash.com/photo-1603650637893-4c8d3f7ef97b",
+      "coordinates": {
+        "latitude": 40.874,
+        "longitude": 29.09
+      },
+      "district": "Princes' Islands",
+      "category": "Island",
+      "address": "Büyükada, Adalar/İstanbul"
+    },
+    {
+      "id": "fener-greek-orthodox-patriarchate",
+      "name": "Fener Greek Orthodox Patriarchate",
+      "description": "The spiritual center of the Eastern Orthodox Church, located in the Fener district. It includes the Church of St. George, which houses important relics and icons.",
+      "summary": "Orthodox Patriarchate, historic church, relics",
+      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "coordinates": {
+        "latitude": 41.031,
+        "longitude": 28.9473
+      },
+      "district": "Fener",
+      "category": "Religious",
+      "address": "Fener Rum Patrikhanesi, Fener, Fatih/İstanbul"
+    },
+    {
+      "id": "balat-streets",
+      "name": "Balat Colorful Streets",
+      "description": "Famous for its colorful historic houses, steep cobbled streets, and vibrant cafes. Balat has become a popular spot for photography and cultural walks.",
+      "summary": "Colorful houses, photography, cultural walks",
+      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "coordinates": {
+        "latitude": 41.0324,
+        "longitude": 28.9481
+      },
+      "district": "Balat",
+      "category": "Historical",
+      "address": "Balat, Fatih/İstanbul"
     }
   ]
 }

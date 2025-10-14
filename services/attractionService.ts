@@ -1,5 +1,8 @@
-import { Attraction, IstanbulDistrict } from '../types';
+import { Attraction, IstanbulDistrict, AttractionCategory } from '../types';
 import attractionsData from '../data/attractions.json';
+import districtsData from '../data/districts.json';
+import { DISTRICT_CONFIGS } from '../constants/Districts';
+import { DISTRICT_METADATA } from '../constants/DistrictMetadata';
 
 /**
  * Validates that an attraction object has all required fields
@@ -25,7 +28,51 @@ function isValidAttraction(attraction: any): attraction is Attraction {
 }
 
 /**
+ * Gets an appropriate image URL for a district
+ * @param districtName - The name of the district
+ * @returns Image URL for the district
+ */
+function getDistrictImageUrl(districtName: IstanbulDistrict): string {
+  const imageMap: Record<string, string> = {
+    [IstanbulDistrict.GALATA]: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200', // Galata Tower
+    [IstanbulDistrict.NISANTASI]: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04', // Shopping street
+    [IstanbulDistrict.MODA]: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4', // Coastal view
+    [IstanbulDistrict.PRINCES_ISLANDS]: 'https://images.unsplash.com/photo-1603650637893-4c8d3f7ef97b', // Islands
+  };
+
+  return imageMap[districtName] || 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200';
+}
+
+/**
+ * Creates a synthetic attraction for a district that has no specific attractions
+ * @param districtName - The name of the district
+ * @returns A synthetic attraction representing the district itself
+ */
+function createDistrictAttraction(districtName: IstanbulDistrict): Attraction | null {
+  const districtConfig = DISTRICT_CONFIGS.find(d => d.name === districtName);
+  const districtMetadata = DISTRICT_METADATA[districtName];
+  const districtData = districtsData.districts.find(d => d.name === districtName);
+
+  if (!districtConfig || !districtMetadata || !districtData) {
+    return null;
+  }
+
+  return {
+    id: `district-${districtName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+    name: districtMetadata.displayName,
+    description: districtData.description,
+    summary: districtMetadata.keyLandmarks.join(', '),
+    imageUrl: getDistrictImageUrl(districtName),
+    coordinates: districtConfig.center,
+    district: districtName,
+    category: AttractionCategory.HISTORICAL,
+    address: `${districtMetadata.displayName}, İstanbul`,
+  };
+}
+
+/**
  * Loads and returns all attractions from the JSON data file
+ * For districts without specific attractions, creates a synthetic district attraction
  * Validates each attraction before returning
  * @returns Array of valid attractions
  * @throws Error if data is invalid or cannot be loaded
@@ -48,7 +95,21 @@ export function getAllAttractions(): Attraction[] {
       throw new Error('No valid attractions found in data');
     }
 
-    return validAttractions as Attraction[];
+    // Find districts without attractions
+    const allDistricts = Object.values(IstanbulDistrict);
+    const districtsWithAttractions = new Set(
+      validAttractions.map(a => a.district)
+    );
+    const districtsWithoutAttractions = allDistricts.filter(
+      d => !districtsWithAttractions.has(d)
+    );
+
+    // Create synthetic attractions for districts without specific attractions
+    const syntheticAttractions = districtsWithoutAttractions
+      .map(createDistrictAttraction)
+      .filter((a): a is Attraction => a !== null);
+
+    return [...validAttractions as Attraction[], ...syntheticAttractions];
   } catch (error) {
     console.error('Error loading attractions:', error);
     throw new Error('Failed to load attraction data');

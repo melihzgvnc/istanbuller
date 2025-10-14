@@ -5,107 +5,107 @@
 
 import { Platform } from 'react-native';
 
-// Color Palette - Istanbul-inspired colors
+// Color Palette - Pastel, soothing colors inspired by Istanbul
 export const Colors = {
-  // Primary - Blue inspired by Bosphorus
+  // Primary - Soft blue inspired by Bosphorus at dawn
   primary: {
-    50: '#EFF6FF',
-    100: '#DBEAFE',
-    200: '#BFDBFE',
-    300: '#93C5FD',
-    400: '#60A5FA',
-    500: '#3B82F6', // Main primary
-    600: '#2563EB',
-    700: '#1D4ED8',
-    800: '#1E40AF',
-    900: '#1E3A8A',
+    50: '#F0F7FF',
+    100: '#E0EFFF',
+    200: '#C7E2FF',
+    300: '#A5D0FF',
+    400: '#7AB8FF',
+    500: '#6BA5F5', // Main primary - soft pastel blue
+    600: '#5B8FDB',
+    700: '#4A75B8',
+    800: '#3A5E94',
+    900: '#2D4A75',
   },
-  
-  // Secondary - Warm terracotta inspired by Istanbul architecture
+
+  // Secondary - Soft terracotta inspired by Istanbul architecture
   secondary: {
-    50: '#FFF7ED',
-    100: '#FFEDD5',
-    200: '#FED7AA',
-    300: '#FDBA74',
-    400: '#FB923C',
-    500: '#F97316', // Main secondary
-    600: '#EA580C',
-    700: '#C2410C',
-    800: '#9A3412',
-    900: '#7C2D12',
+    50: '#FFF8F3',
+    100: '#FFEEE0',
+    200: '#FFE0C7',
+    300: '#FFCBA5',
+    400: '#FFB07A',
+    500: '#F5A76B', // Main secondary - soft pastel coral
+    600: '#DB8F5B',
+    700: '#B8754A',
+    800: '#945E3A',
+    900: '#754A2D',
   },
-  
-  // Success - Green
+
+  // Success - Soft mint green
   success: {
-    50: '#ECFDF5',
-    100: '#D1FAE5',
-    200: '#A7F3D0',
-    300: '#6EE7B7',
-    400: '#34D399',
-    500: '#10B981',
-    600: '#059669',
-    700: '#047857',
-    800: '#065F46',
-    900: '#064E3B',
+    50: '#F0FDF9',
+    100: '#DDFBF0',
+    200: '#BFF5E0',
+    300: '#8EECC9',
+    400: '#5DDCAE',
+    500: '#6BC9A8', // Soft pastel mint
+    600: '#5BAF92',
+    700: '#4A9178',
+    800: '#3A7460',
+    900: '#2D5C4A',
   },
-  
-  // Error - Red
+
+  // Error - Soft rose
   error: {
-    50: '#FEF2F2',
-    100: '#FEE2E2',
-    200: '#FECACA',
-    300: '#FCA5A5',
-    400: '#F87171',
-    500: '#EF4444',
-    600: '#DC2626',
-    700: '#B91C1C',
-    800: '#991B1B',
-    900: '#7F1D1D',
+    50: '#FFF5F5',
+    100: '#FFE8E8',
+    200: '#FFD1D1',
+    300: '#FFB0B0',
+    400: '#FF8A8A',
+    500: '#F57A7A', // Soft pastel rose
+    600: '#DB6B6B',
+    700: '#B85757',
+    800: '#944545',
+    900: '#753636',
   },
-  
-  // Warning - Amber
+
+  // Warning - Soft peach
   warning: {
-    50: '#FFFBEB',
-    100: '#FEF3C7',
-    200: '#FDE68A',
-    300: '#FCD34D',
-    400: '#FBBF24',
-    500: '#F59E0B',
-    600: '#D97706',
-    700: '#B45309',
-    800: '#92400E',
-    900: '#78350F',
+    50: '#FFFBF0',
+    100: '#FFF4DD',
+    200: '#FFE9BF',
+    300: '#FFD98E',
+    400: '#FFC55D',
+    500: '#F5B86B', // Soft pastel peach
+    600: '#DBA05B',
+    700: '#B8854A',
+    800: '#946A3A',
+    900: '#75542D',
   },
-  
-  // Neutral - Grays
+
+  // Neutral - Warm grays with subtle warmth
   neutral: {
-    50: '#F9FAFB',
-    100: '#F3F4F6',
-    200: '#E5E7EB',
-    300: '#D1D5DB',
-    400: '#9CA3AF',
-    500: '#6B7280',
-    600: '#4B5563',
-    700: '#374151',
-    800: '#1F2937',
-    900: '#111827',
+    50: '#FAFAF9',
+    100: '#F5F5F4',
+    200: '#E7E5E4',
+    300: '#D6D3D1',
+    400: '#A8A29E',
+    500: '#78716C',
+    600: '#57534E',
+    700: '#44403C',
+    800: '#292524',
+    900: '#1C1917',
   },
-  
+
   // Semantic colors
-  background: '#FFFFFF',
-  surface: '#F9FAFB',
+  background: '#FDFCFB',
+  surface: '#F9F8F7',
   text: {
-    primary: '#111827',
-    secondary: '#6B7280',
-    tertiary: '#9CA3AF',
+    primary: '#2D2A27',
+    secondary: '#78716C',
+    tertiary: '#A8A29E',
     inverse: '#FFFFFF',
   },
   border: {
-    light: '#F3F4F6',
-    default: '#E5E7EB',
-    dark: '#D1D5DB',
+    light: '#F5F5F4',
+    default: '#E7E5E4',
+    dark: '#D6D3D1',
   },
-  overlay: 'rgba(0, 0, 0, 0.5)',
+  overlay: 'rgba(0, 0, 0, 0.4)',
 };
 
 // Typography
@@ -131,7 +131,7 @@ export const Typography = {
       bold: 'System',
     },
   }),
-  
+
   // Font sizes
   fontSize: {
     xs: 12,
@@ -144,7 +144,7 @@ export const Typography = {
     '4xl': 32,
     '5xl': 36,
   },
-  
+
   // Font weights
   fontWeight: {
     regular: '400' as const,
@@ -153,7 +153,7 @@ export const Typography = {
     bold: '700' as const,
     extrabold: '800' as const,
   },
-  
+
   // Line heights
   lineHeight: {
     tight: 1.25,
@@ -177,15 +177,15 @@ export const Spacing = {
   '5xl': 64,
 };
 
-// Border radius
+// Border radius - Increased for softer, more rounded appearance
 export const BorderRadius = {
   none: 0,
-  sm: 4,
-  base: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  '2xl': 24,
+  sm: 8,
+  base: 12,
+  md: 16,
+  lg: 20,
+  xl: 24,
+  '2xl': 28,
   full: 9999,
 };
 
@@ -272,7 +272,7 @@ export const Shadows = {
 export const Accessibility = {
   minTouchTarget: 44, // iOS HIG and Material Design recommendation
   minTouchTargetAndroid: 48, // Material Design specific
-  
+
   // Contrast ratios (WCAG AA compliance)
   contrastRatios: {
     normalText: 4.5, // Minimum for normal text

@@ -12,6 +12,16 @@ export enum IstanbulDistrict {
   KADIKOY = 'Kadıköy',
   USKUDAR = 'Üsküdar',
   ORTAKOY = 'Ortaköy',
+  EMINONU = 'Eminönü',
+  GALATA = 'Galata',
+  BALAT = 'Balat',
+  FENER = 'Fener',
+  TAKSIM = 'Taksim',
+  NISANTASI = 'Nişantaşı',
+  RUMELI_HISARI = 'Rumeli Hisarı',
+  BEBEK = 'Bebek',
+  MODA = 'Moda',
+  PRINCES_ISLANDS = "Princes' Islands",
 }
 
 export enum AttractionCategory {
@@ -22,6 +32,10 @@ export enum AttractionCategory {
   BAZAAR = 'Bazaar',
   PARK = 'Park',
   VIEWPOINT = 'Viewpoint',
+  SQUARE = 'Square',
+  TRANSPORTATION = 'Transportation',
+  ISLAND = 'Island',
+  RELIGIOUS = 'Religious',
 }
 
 export interface Attraction {

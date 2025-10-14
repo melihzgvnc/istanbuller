@@ -40,7 +40,7 @@
       "name": "Üsküdar",
       "center": {
         "latitude": 41.0225,
-        "longitude": 29.0150
+        "longitude": 29.015
       },
       "radiusKm": 3.2,
       "description": "Historic Asian side district with mosques, hills, and Bosphorus views"
@@ -53,6 +53,96 @@
       },
       "radiusKm": 1.5,
       "description": "Charming Bosphorus neighborhood famous for its mosque and waterfront cafes"
+    },
+    {
+      "name": "Eminönü",
+      "center": {
+        "latitude": 41.0165,
+        "longitude": 28.9711
+      },
+      "radiusKm": 2.0,
+      "description": "Historic area with Spice Bazaar, Galata Bridge, and ferry terminals"
+    },
+    {
+      "name": "Galata",
+      "center": {
+        "latitude": 41.0257,
+        "longitude": 28.9733
+      },
+      "radiusKm": 1.2,
+      "description": "Iconic neighborhood around Galata Tower with stunning city views"
+    },
+    {
+      "name": "Balat",
+      "center": {
+        "latitude": 41.0324,
+        "longitude": 28.9481
+      },
+      "radiusKm": 1.5,
+      "description": "Colorful historic neighborhood known for its old houses and cafes"
+    },
+    {
+      "name": "Fener",
+      "center": {
+        "latitude": 41.031,
+        "longitude": 28.9473
+      },
+      "radiusKm": 1.2,
+      "description": "Historic Greek Orthodox neighborhood with old churches and narrow streets"
+    },
+    {
+      "name": "Taksim",
+      "center": {
+        "latitude": 41.037,
+        "longitude": 28.9856
+      },
+      "radiusKm": 1.8,
+      "description": "Central square and lively area with shops, restaurants, and nightlife"
+    },
+    {
+      "name": "Nişantaşı",
+      "center": {
+        "latitude": 41.0469,
+        "longitude": 28.9903
+      },
+      "radiusKm": 1.5,
+      "description": "Upscale neighborhood with luxury boutiques and cafes"
+    },
+    {
+      "name": "Rumeli Hisarı",
+      "center": {
+        "latitude": 41.0841,
+        "longitude": 29.0571
+      },
+      "radiusKm": 1.3,
+      "description": "Historic fortress area with Bosphorus views and cafes"
+    },
+    {
+      "name": "Bebek",
+      "center": {
+        "latitude": 41.074,
+        "longitude": 29.042
+      },
+      "radiusKm": 1.3,
+      "description": "Elegant Bosphorus neighborhood popular for seaside walks and cafes"
+    },
+    {
+      "name": "Moda",
+      "center": {
+        "latitude": 40.9846,
+        "longitude": 29.0242
+      },
+      "radiusKm": 1.5,
+      "description": "Trendy neighborhood in Kadıköy with sea views, cafes, and parks"
+    },
+    {
+      "name": "Princes’ Islands",
+      "center": {
+        "latitude": 40.874,
+        "longitude": 29.09
+      },
+      "radiusKm": 6.0,
+      "description": "Car-free islands in the Marmara Sea famous for their beaches and mansions"
     }
   ]
 }
