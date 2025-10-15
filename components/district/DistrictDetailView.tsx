@@ -6,12 +6,17 @@ import {
   SafeAreaView,
   StatusBar,
   Pressable,
+  ImageBackground,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { IstanbulDistrict } from '@/types';
 import { getDistrictMetadata } from '@/constants/DistrictMetadata';
 import { getDistrictConfig } from '@/constants/Districts';
 import { useAttractions } from '@/hooks/useAttractions';
+import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedDistrictField } from '@/utils/translations';
 import AttractionList from '@/components/attractions/AttractionList';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import Theme from '@/constants/theme';
@@ -24,6 +29,7 @@ interface DistrictDetailViewProps {
 
 export default function DistrictDetailView({ district, onBack }: DistrictDetailViewProps) {
   const router = useRouter();
+  const { t, language } = useLanguage();
   const districtInfo = getDistrictMetadata(district);
   const districtConfig = getDistrictConfig(district);
 
@@ -50,32 +56,42 @@ export default function DistrictDetailView({ district, onBack }: DistrictDetailV
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      <View style={styles.header}>
-        <Pressable
-          style={styles.backButton}
-          onPress={handleBack}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
-          accessibilityHint="Returns to district list"
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Hero Image Header */}
+      <ImageBackground
+        source={districtInfo.image || require('@/assets/images/districts/sultanahmet.jpg')}
+        style={styles.heroImage}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.6)']}
+          style={styles.heroGradient}
         >
-          <IconSymbol
-            name="chevron.left"
-            size={24}
-            color={Theme.colors.primary[500]}
-          />
-        </Pressable>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>{districtInfo.displayName}</Text>
-          <Text style={styles.subtitle}>{districtInfo.description}</Text>
-        </View>
-      </View>
+          {/* Back Button - positioned absolutely at top */}
+          <Pressable
+            style={styles.backButton}
+            onPress={handleBack}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            accessibilityHint="Returns to district list"
+          >
+            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          </Pressable>
+
+          {/* Content at bottom */}
+          <View style={styles.heroContent}>
+            <Text style={styles.title}>{getTranslatedDistrictField(district, 'displayName', language, districtInfo.displayName)}</Text>
+            <Text style={styles.subtitle}>{getTranslatedDistrictField(district, 'description', language, districtInfo.description)}</Text>
+          </View>
+        </LinearGradient>
+      </ImageBackground>
 
       {districtInfo.keyLandmarks.length > 0 && (
         <View style={styles.landmarksContainer}>
-          <Text style={styles.landmarksTitle}>Key Landmarks</Text>
+          <Text style={styles.landmarksTitle}>{t('district.keyLandmarks')}</Text>
           <View style={styles.landmarksList}>
             {districtInfo.keyLandmarks.map((landmark, index) => (
               <View key={index} style={styles.landmarkItem}>
@@ -93,10 +109,10 @@ export default function DistrictDetailView({ district, onBack }: DistrictDetailV
 
       <View style={styles.attractionsHeader}>
         <Text style={styles.attractionsTitle}>
-          Attractions ({attractions.length})
+          {t('district.attractions')} ({attractions.length})
         </Text>
         <Text style={styles.attractionsSubtitle}>
-          Distances from district center
+          {t('district.distancesFromCenter')}
         </Text>
       </View>
 
@@ -107,7 +123,7 @@ export default function DistrictDetailView({ district, onBack }: DistrictDetailV
         onRefresh={refresh}
         onAttractionPress={handleAttractionPress}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -116,33 +132,46 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Theme.colors.background,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Theme.spacing.lg,
-    paddingTop: Theme.spacing.base,
-    paddingBottom: Theme.spacing.md,
-    backgroundColor: Theme.colors.background,
+  heroImage: {
+    width: '100%',
+    height: 240,
+  },
+  heroGradient: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: Theme.spacing.base,
   },
   backButton: {
+    position: 'absolute',
+    top: 48,
+    left: Theme.spacing.base,
     width: Theme.accessibility.minTouchTarget,
     height: Theme.accessibility.minTouchTarget,
+    borderRadius: Theme.borderRadius.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Theme.spacing.sm,
   },
-  headerContent: {
-    flex: 1,
+  heroContent: {
+    paddingHorizontal: Theme.spacing.lg,
+    paddingBottom: Theme.spacing.sm,
   },
   title: {
-    fontSize: Theme.typography.fontSize['2xl'],
+    fontSize: Theme.typography.fontSize['3xl'],
     fontWeight: Theme.typography.fontWeight.bold,
-    color: Theme.colors.text.primary,
+    color: '#FFFFFF',
     marginBottom: Theme.spacing.xs,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
-    fontSize: Theme.typography.fontSize.sm,
-    color: Theme.colors.text.secondary,
+    fontSize: Theme.typography.fontSize.base,
+    color: '#FFFFFF',
+    lineHeight: 22,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   landmarksContainer: {
     paddingHorizontal: Theme.spacing.lg,

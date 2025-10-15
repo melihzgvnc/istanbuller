@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { AttractionWithDistance } from '@/types';
+import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedAttractionField } from '@/utils/translations';
 import DistanceBadge from './DistanceBadge';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ATTRACTION_CARD_IMAGE_CONFIG } from '@/constants/ImageConfig';
@@ -16,6 +18,7 @@ interface AttractionCardProps {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function AttractionCard({ attraction, onPress }: AttractionCardProps) {
+  const { language } = useLanguage();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -58,13 +61,13 @@ export default function AttractionCard({ attraction, onPress }: AttractionCardPr
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.name} numberOfLines={2}>
-            {attraction.name}
+            {getTranslatedAttractionField(attraction.id, 'name', language, attraction.name)}
           </Text>
           <Text style={styles.category}>{attraction.category}</Text>
         </View>
 
         <Text style={styles.summary} numberOfLines={2}>
-          {attraction.summary}
+          {getTranslatedAttractionField(attraction.id, 'summary', language, attraction.summary)}
         </Text>
 
         <DistanceBadge distance={attraction.distance} />

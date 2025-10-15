@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 import { IstanbulDistrict } from '@/types';
 import { getAllDistricts } from '@/constants/DistrictMetadata';
+import { useLanguage } from '@/context/LanguageContext';
 import DistrictCard from '@/components/district/DistrictCard';
 import DistrictDetailView from '@/components/district/DistrictDetailView';
 import Theme from '@/constants/theme';
 
 export default function ExploreScreen() {
+  const { t } = useLanguage();
   const [selectedDistrict, setSelectedDistrict] = useState<IstanbulDistrict | null>(null);
   const districts = getAllDistricts();
 
@@ -40,8 +42,8 @@ export default function ExploreScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
-        <Text style={styles.title}>Explore Istanbul</Text>
-        <Text style={styles.subtitle}>Discover all districts and their attractions</Text>
+        <Text style={styles.title}>{t('explore.title')}</Text>
+        <Text style={styles.subtitle}>{t('explore.subtitle')}</Text>
       </View>
       <ScrollView
         style={styles.scrollView}

@@ -7,6 +7,7 @@ export interface DistrictInfo {
   description: string;
   keyLandmarks: string[];
   icon: string;
+  image?: any;
 }
 
 const DISTRICTS_ARRAY: DistrictInfo[] = [
@@ -16,6 +17,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Historic heart of Istanbul, home to major Byzantine and Ottoman monuments',
     keyLandmarks: ['Hagia Sophia', 'Blue Mosque', 'Topkapi Palace'],
     icon: 'building.columns',
+    image: require('@/assets/images/districts/sultanahmet.jpg'),
   },
   {
     name: IstanbulDistrict.BEYOGLU,
@@ -23,6 +25,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Modern cultural center with İstiklal Avenue, Galata Tower, and vibrant nightlife',
     keyLandmarks: ['Galata Tower', 'İstiklal Avenue', 'Pera Museum'],
     icon: 'building.2',
+    image: require('@/assets/images/districts/beyoglu.jpg'),
   },
   {
     name: IstanbulDistrict.BESIKTAS,
@@ -30,6 +33,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Bosphorus district featuring palaces, parks, and waterfront promenades',
     keyLandmarks: ['Dolmabahçe Palace', 'Beşiktaş Square', 'Yıldız Park'],
     icon: 'water.waves',
+    image: require('@/assets/images/districts/besiktas.jpg'),
   },
   {
     name: IstanbulDistrict.KADIKOY,
@@ -37,6 +41,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Vibrant Asian side district known for markets, cafes, and bohemian atmosphere',
     keyLandmarks: ['Kadıköy Market', 'Moda Coast', 'Fenerbahçe Park'],
     icon: 'ferry',
+    image: require('@/assets/images/districts/kadikoy.jpg'),
   },
   {
     name: IstanbulDistrict.USKUDAR,
@@ -44,6 +49,8 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Historic Asian side district with mosques, hills, and Bosphorus views',
     keyLandmarks: ['Maiden\'s Tower', 'Çamlıca Hill', 'Mihrimah Sultan Mosque'],
     icon: 'mosque',
+    image: require('@/assets/images/districts/uskudar.jpg'),
+
   },
   {
     name: IstanbulDistrict.ORTAKOY,
@@ -51,6 +58,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Charming Bosphorus neighborhood famous for its mosque and waterfront cafes',
     keyLandmarks: ['Ortaköy Mosque', 'Bosphorus Bridge', 'Ortaköy Square'],
     icon: 'bridge',
+    image: require('@/assets/images/districts/ortakoy.jpg'),
   },
   {
     name: IstanbulDistrict.EMINONU,
@@ -58,6 +66,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Historic area with Spice Bazaar, Galata Bridge, and ferry terminals',
     keyLandmarks: ['Spice Bazaar', 'Galata Bridge', 'New Mosque'],
     icon: 'ferry',
+    image: require('@/assets/images/districts/eminonu.jpg'),
   },
   {
     name: IstanbulDistrict.GALATA,
@@ -65,6 +74,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Iconic neighborhood around Galata Tower with stunning city views',
     keyLandmarks: ['Galata Tower', 'Galata Bridge', 'Historic Streets'],
     icon: 'building.columns',
+    image: require('@/assets/images/districts/galata.jpg'),
   },
   {
     name: IstanbulDistrict.BALAT,
@@ -72,6 +82,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Colorful historic neighborhood known for its old houses and cafes',
     keyLandmarks: ['Colorful Streets', 'Historic Houses', 'Cafes'],
     icon: 'paintpalette',
+    image: require('@/assets/images/districts/balat.jpg'),
   },
   {
     name: IstanbulDistrict.FENER,
@@ -79,6 +90,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Historic Greek Orthodox neighborhood with old churches and narrow streets',
     keyLandmarks: ['Greek Orthodox Patriarchate', 'Church of St. George', 'Historic Streets'],
     icon: 'building.columns',
+    image: require('@/assets/images/districts/fener.jpg'),
   },
   {
     name: IstanbulDistrict.TAKSIM,
@@ -86,6 +98,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Central square and lively area with shops, restaurants, and nightlife',
     keyLandmarks: ['Taksim Square', 'Republic Monument', 'İstiklal Avenue'],
     icon: 'building.2',
+    image: require('@/assets/images/districts/taksim.jpg'),
   },
   {
     name: IstanbulDistrict.NISANTASI,
@@ -93,6 +106,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Upscale neighborhood with luxury boutiques and cafes',
     keyLandmarks: ['Luxury Boutiques', 'Cafes', 'City\'s Park'],
     icon: 'bag',
+    image: require('@/assets/images/districts/nisantasi.jpg'),
   },
   {
     name: IstanbulDistrict.RUMELI_HISARI,
@@ -100,6 +114,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Historic fortress area with Bosphorus views and cafes',
     keyLandmarks: ['Rumeli Fortress', 'Bosphorus Views', 'Historic Walls'],
     icon: 'building.columns',
+    image: require('@/assets/images/districts/rumelihisari.jpg'),
   },
   {
     name: IstanbulDistrict.BEBEK,
@@ -107,6 +122,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Elegant Bosphorus neighborhood popular for seaside walks and cafes',
     keyLandmarks: ['Bebek Coast', 'Bosphorus Promenade', 'Cafes'],
     icon: 'water.waves',
+    image: require('@/assets/images/districts/bebek.jpg'),
   },
   {
     name: IstanbulDistrict.MODA,
@@ -114,6 +130,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Trendy neighborhood in Kadıköy with sea views, cafes, and parks',
     keyLandmarks: ['Moda Coastal Park', 'Historic Pier', 'Art Nouveau Buildings'],
     icon: 'water.waves',
+    image: require('@/assets/images/districts/moda.jpg'),
   },
   {
     name: IstanbulDistrict.PRINCES_ISLANDS,
@@ -121,6 +138,7 @@ const DISTRICTS_ARRAY: DistrictInfo[] = [
     description: 'Car-free islands in the Marmara Sea famous for their beaches and mansions',
     keyLandmarks: ['Büyükada', 'Beaches', 'Historic Mansions'],
     icon: 'ferry',
+    image: require('@/assets/images/districts/princesisland.jpg'),
   },
 ];
 

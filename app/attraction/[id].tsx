@@ -15,6 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { getAttractionById } from '@/services/attractionService';
 import { enrichWithDistance } from '@/services/distanceService';
 import { useLocation } from '@/hooks/useLocation';
+import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedAttractionField } from '@/utils/translations';
 import { AttractionWithDistance } from '@/types';
 import DistanceBadge from '@/components/attractions/DistanceBadge';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -31,6 +33,7 @@ export default function AttractionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { location } = useLocation();
+  const { t, language } = useLanguage();
 
   const [attraction, setAttraction] = useState<AttractionWithDistance | null>(null);
   const [loading, setLoading] = useState(true);
@@ -176,9 +179,9 @@ export default function AttractionDetailScreen() {
         <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.background} />
         <Animated.View entering={FadeIn.duration(300)} style={{ alignItems: 'center' }}>
           <Ionicons name="alert-circle-outline" size={64} color={Theme.colors.error[500]} />
-          <Text style={styles.errorText}>{error || 'Attraction not found'}</Text>
+          <Text style={styles.errorText}>{error || t('attraction.notFound')}</Text>
           <Pressable style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backButtonText}>Go Back</Text>
+            <Text style={styles.backButtonText}>{t('common.goBack')}</Text>
           </Pressable>
         </Animated.View>
       </SafeAreaView>
@@ -222,7 +225,7 @@ export default function AttractionDetailScreen() {
           <Animated.View entering={FadeInDown.duration(400).delay(100)} style={styles.content}>
             {/* Header Section */}
             <View style={styles.headerSection}>
-              <Text style={styles.name}>{attraction.name}</Text>
+              <Text style={styles.name}>{getTranslatedAttractionField(attraction.id, 'name', language, attraction.name)}</Text>
               <View style={styles.metaRow}>
                 <View style={styles.categoryBadge}>
                   <Ionicons name="pricetag" size={16} color={Theme.colors.primary[500]} />
@@ -238,20 +241,20 @@ export default function AttractionDetailScreen() {
             {/* Distance Information */}
             {location && attraction.distance.walkingDistanceKm > 0 && (
               <View style={styles.distanceSection}>
-                <Text style={styles.sectionTitle}>Distance from You</Text>
+                <Text style={styles.sectionTitle}>{t('attraction.distanceFromYou')}</Text>
                 <DistanceBadge distance={attraction.distance} />
               </View>
             )}
 
             {/* Description Section */}
             <View style={styles.descriptionSection}>
-              <Text style={styles.sectionTitle}>About</Text>
-              <Text style={styles.description}>{attraction.description}</Text>
+              <Text style={styles.sectionTitle}>{t('attraction.about')}</Text>
+              <Text style={styles.description}>{getTranslatedAttractionField(attraction.id, 'description', language, attraction.description)}</Text>
             </View>
 
             {/* Address Section */}
             <View style={styles.addressSection}>
-              <Text style={styles.sectionTitle}>Address</Text>
+              <Text style={styles.sectionTitle}>{t('attraction.address')}</Text>
               <View style={styles.addressRow}>
                 <Ionicons name="navigate" size={20} color={Theme.colors.text.secondary} />
                 <Text style={styles.address}>{attraction.address}</Text>
@@ -264,11 +267,10 @@ export default function AttractionDetailScreen() {
               onPress={handleNavigate}
               accessible={true}
               accessibilityRole="button"
-              accessibilityLabel="Take me there"
-              accessibilityHint="Opens Google Maps with directions to this attraction"
+              accessibilityLabel={t('attraction.takeMeThere')}
             >
               <Ionicons name="navigate-circle" size={24} color="#FFFFFF" />
-              <Text style={styles.navigationButtonText}>Take Me There</Text>
+              <Text style={styles.navigationButtonText}>{t('attraction.takeMeThere')}</Text>
             </Pressable>
           </Animated.View>
         </ScrollView>

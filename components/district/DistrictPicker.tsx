@@ -8,11 +8,15 @@ import {
   ScrollView,
   Pressable,
   Platform,
+  Image,
 } from 'react-native';
 import { IstanbulDistrict } from '@/types';
-import { DISTRICT_METADATA, getAllDistricts, DistrictInfo } from '@/constants/DistrictMetadata';
+import { getAllDistricts, DistrictInfo } from '@/constants/DistrictMetadata';
+import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedDistrictField } from '@/utils/translations';
 import { Colors, Spacing, BorderRadius, Typography, Shadows, Accessibility } from '@/constants/theme';
 import { selectionHaptic, lightHaptic } from '@/utils/haptics';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 
 interface DistrictPickerProps {
   visible: boolean;
@@ -27,6 +31,7 @@ export const DistrictPicker: React.FC<DistrictPickerProps> = ({
   onDismiss,
   currentDistrict,
 }) => {
+  const { t } = useLanguage();
   const [selectedDistrict, setSelectedDistrict] = useState<IstanbulDistrict | null>(
     currentDistrict || null
   );
@@ -36,7 +41,7 @@ export const DistrictPicker: React.FC<DistrictPickerProps> = ({
   const handleDistrictPress = (district: IstanbulDistrict) => {
     selectionHaptic();
     setSelectedDistrict(district);
-    
+
     // Provide visual feedback before closing
     setTimeout(() => {
       onSelect(district);
@@ -83,15 +88,14 @@ export const DistrictPicker: React.FC<DistrictPickerProps> = ({
           <View style={styles.header}>
             <View style={styles.dragHandle} />
             <View style={styles.headerContent}>
-              <Text style={styles.headerTitle}>Choose a District</Text>
+              <Text style={styles.headerTitle}>{t('district.chooseDistrict')}</Text>
               <TouchableOpacity
                 onPress={handleClosePress}
                 style={styles.closeButton}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 accessible={true}
-                accessibilityLabel="Close"
+                accessibilityLabel={t('common.close')}
                 accessibilityRole="button"
-                accessibilityHint="Closes the district picker"
               >
                 <Text style={styles.closeButtonText}>✕</Text>
               </TouchableOpacity>
@@ -132,37 +136,62 @@ const DistrictItem: React.FC<DistrictItemProps> = ({
   isSelected,
   onPress,
 }) => {
+  const { language } = useLanguage();
+  const displayName = getTranslatedDistrictField(districtInfo.name, 'displayName', language, districtInfo.displayName);
+  const description = getTranslatedDistrictField(districtInfo.name, 'description', language, districtInfo.description);
+
   return (
     <TouchableOpacity
       style={[styles.districtItem, isSelected && styles.districtItemSelected]}
       onPress={onPress}
       activeOpacity={0.7}
       accessible={true}
-      accessibilityLabel={`${districtInfo.displayName}, ${districtInfo.description}`}
+      accessibilityLabel={`${displayName}, ${description}`}
       accessibilityRole="button"
-      accessibilityHint={`Select ${districtInfo.displayName} district`}
+      accessibilityHint={`Select ${displayName} district`}
       accessibilityState={{ selected: isSelected }}
     >
       <View style={styles.districtItemContent}>
-        {/* Selection Indicator */}
-        <View style={styles.selectionIndicator}>
-          {isSelected ? (
-            <View style={styles.selectedCircle}>
-              <View style={styles.selectedDot} />
-            </View>
+        {/* District Image */}
+        <View style={styles.imageContainer}>
+          {districtInfo.image ? (
+            <Image
+              source={districtInfo.image}
+              style={styles.districtImage}
+              resizeMode="cover"
+            />
           ) : (
-            <View style={styles.unselectedCircle} />
+            <View style={styles.iconFallback}>
+              <IconSymbol
+                name={districtInfo.icon as any}
+                size={32}
+                color={Colors.primary[500]}
+              />
+            </View>
           )}
         </View>
 
         {/* District Info */}
         <View style={styles.districtInfo}>
-          <Text style={styles.districtName}>{districtInfo.displayName}</Text>
-          <Text style={styles.districtDescription}>{districtInfo.description}</Text>
-          
+          <View style={styles.districtHeader}>
+            <Text style={styles.districtName}>{displayName}</Text>
+            {/* Selection Indicator */}
+            <View style={styles.selectionIndicator}>
+              {isSelected ? (
+                <View style={styles.selectedCircle}>
+                  <View style={styles.selectedDot} />
+                </View>
+              ) : (
+                <View style={styles.unselectedCircle} />
+              )}
+            </View>
+          </View>
+
+          <Text style={styles.districtDescription}>{description}</Text>
+
           {/* Key Landmarks */}
           <View style={styles.landmarksContainer}>
-            {districtInfo.keyLandmarks.map((landmark, index) => (
+            {districtInfo.keyLandmarks.slice(0, 2).map((landmark, index) => (
               <Text key={index} style={styles.landmark}>
                 • {landmark}
               </Text>
@@ -253,10 +282,33 @@ const styles = StyleSheet.create({
   districtItemContent: {
     flexDirection: 'row',
     padding: Spacing.base,
+    gap: Spacing.md,
+  },
+  imageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: BorderRadius.md,
+    overflow: 'hidden',
+  },
+  districtImage: {
+    width: '100%',
+    height: '100%',
+  },
+  iconFallback: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: Colors.primary[50],
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  districtHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.xs,
   },
   selectionIndicator: {
-    marginRight: Spacing.md,
-    paddingTop: 2,
+    marginLeft: Spacing.sm,
   },
   selectedCircle: {
     width: 24,

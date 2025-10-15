@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { useLanguage } from '@/context/LanguageContext';
 import Theme from '@/constants/theme';
 import { mediumHaptic } from '@/utils/haptics';
 
@@ -21,10 +22,8 @@ interface DistrictSelectionPromptProps {
 interface ErrorConfig {
   icon: keyof typeof Ionicons.glyphMap;
   iconColor: string;
-  title: string;
-  message: string;
-  primaryButtonText: string;
-  secondaryButtonText: string;
+  titleKey: string;
+  messageKey: string;
   showSecondaryButton: boolean;
 }
 
@@ -32,37 +31,29 @@ const ERROR_CONFIGS: Record<ErrorType, ErrorConfig> = {
   'no-district': {
     icon: 'help-circle-outline',
     iconColor: Theme.colors.warning[500],
-    title: "We couldn't detect your district",
-    message: "You might be outside our covered areas. You can still explore Istanbul by choosing a district manually.",
-    primaryButtonText: 'Choose District Manually',
-    secondaryButtonText: 'Retry Location',
+    titleKey: 'district.noDistrictTitle',
+    messageKey: 'district.noDistrictMessage',
     showSecondaryButton: true,
   },
   'gps-timeout': {
     icon: 'time-outline',
     iconColor: Theme.colors.warning[500],
-    title: 'GPS is taking too long',
-    message: "We're still trying to find your location. You can choose a district manually while we keep trying.",
-    primaryButtonText: 'Choose District Manually',
-    secondaryButtonText: 'Keep Waiting',
+    titleKey: 'district.gpsTimeoutTitle',
+    messageKey: 'district.gpsTimeoutMessage',
     showSecondaryButton: true,
   },
   'services-disabled': {
     icon: 'location-outline',
     iconColor: Theme.colors.error[500],
-    title: 'Location services are disabled',
-    message: "Location services are turned off. You can still explore by choosing a district manually.",
-    primaryButtonText: 'Choose District Manually',
-    secondaryButtonText: 'Open Settings',
+    titleKey: 'district.servicesDisabledTitle',
+    messageKey: 'district.servicesDisabledMessage',
     showSecondaryButton: true,
   },
   'permission-denied': {
     icon: 'lock-closed-outline',
     iconColor: Theme.colors.error[500],
-    title: 'Location permission needed',
-    message: "Location permission is needed for automatic detection. You can browse districts manually in the meantime.",
-    primaryButtonText: 'Choose District Manually',
-    secondaryButtonText: 'Grant Permission',
+    titleKey: 'district.permissionNeededTitle',
+    messageKey: 'district.permissionNeededMessage',
     showSecondaryButton: true,
   },
 };
@@ -72,6 +63,7 @@ export default function DistrictSelectionPrompt({
   onRetryLocation,
   errorType = 'no-district',
 }: DistrictSelectionPromptProps) {
+  const { t } = useLanguage();
   const config = ERROR_CONFIGS[errorType];
 
   const handleSelectDistrict = () => {
@@ -86,33 +78,33 @@ export default function DistrictSelectionPrompt({
 
   return (
     <Animated.View entering={FadeIn.duration(300)} style={styles.container}>
-      <Animated.View 
-        entering={FadeInDown.duration(400).delay(100)} 
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(100)}
         style={styles.iconContainer}
       >
-        <Ionicons 
-          name={config.icon} 
-          size={64} 
-          color={config.iconColor} 
+        <Ionicons
+          name={config.icon}
+          size={64}
+          color={config.iconColor}
         />
       </Animated.View>
-      
-      <Animated.Text 
-        entering={FadeInDown.duration(400).delay(200)} 
+
+      <Animated.Text
+        entering={FadeInDown.duration(400).delay(200)}
         style={styles.title}
       >
-        {config.title}
-      </Animated.Text>
-      
-      <Animated.Text 
-        entering={FadeInDown.duration(400).delay(300)} 
-        style={styles.message}
-      >
-        {config.message}
+        {t(config.titleKey)}
       </Animated.Text>
 
-      <Animated.View 
-        entering={FadeInDown.duration(400).delay(400)} 
+      <Animated.Text
+        entering={FadeInDown.duration(400).delay(300)}
+        style={styles.message}
+      >
+        {t(config.messageKey)}
+      </Animated.Text>
+
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(400)}
         style={styles.buttonContainer}
       >
         <TouchableOpacity
@@ -121,16 +113,15 @@ export default function DistrictSelectionPrompt({
           activeOpacity={0.8}
           accessible={true}
           accessibilityRole="button"
-          accessibilityLabel={config.primaryButtonText}
-          accessibilityHint="Opens district picker to manually select a district"
+          accessibilityLabel={t('district.chooseManually')}
         >
-          <Ionicons 
-            name="map-outline" 
-            size={20} 
-            color={Theme.colors.text.inverse} 
+          <Ionicons
+            name="map-outline"
+            size={20}
+            color={Theme.colors.text.inverse}
           />
           <Text style={styles.primaryButtonText}>
-            {config.primaryButtonText}
+            {t('district.chooseManually')}
           </Text>
         </TouchableOpacity>
 
@@ -141,11 +132,10 @@ export default function DistrictSelectionPrompt({
             activeOpacity={0.8}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel={config.secondaryButtonText}
-            accessibilityHint="Attempts to detect your location again"
+            accessibilityLabel={t('location.retryLocation')}
           >
             <Text style={styles.secondaryButtonText}>
-              {config.secondaryButtonText}
+              {t('location.retryLocation')}
             </Text>
           </TouchableOpacity>
         )}

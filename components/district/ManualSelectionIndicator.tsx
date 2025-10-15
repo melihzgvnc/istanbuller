@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { IstanbulDistrict } from '@/types';
 import { getDistrictMetadata } from '@/constants/DistrictMetadata';
+import { useLanguage } from '@/context/LanguageContext';
 import { Colors, Spacing, BorderRadius, Typography, Shadows, Accessibility } from '@/constants/theme';
 import { lightHaptic } from '@/utils/haptics';
 
@@ -20,6 +21,7 @@ export const ManualSelectionIndicator: React.FC<ManualSelectionIndicatorProps> =
   district,
   onClearSelection,
 }) => {
+  const { t } = useLanguage();
   const districtInfo = getDistrictMetadata(district);
 
   const handleClearPress = () => {
@@ -54,7 +56,7 @@ export const ManualSelectionIndicator: React.FC<ManualSelectionIndicatorProps> =
 
         {/* Manual Badge */}
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>Manual</Text>
+          <Text style={styles.badgeText}>{t('district.manual')}</Text>
         </View>
 
         {/* Close Icon */}

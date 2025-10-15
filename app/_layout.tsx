@@ -6,6 +6,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AppProvider } from '@/context/AppContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 export const unstable_settings = {
@@ -18,28 +19,30 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
-        <AppProvider>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <Stack
-              screenOptions={{
-                animation: 'slide_from_right',
-                animationDuration: 250,
-              }}
-            >
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen 
-                name="attraction/[id]" 
-                options={{ 
-                  headerShown: false,
-                  presentation: 'card',
+        <LanguageProvider>
+          <AppProvider>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              <Stack
+                screenOptions={{
                   animation: 'slide_from_right',
-                }} 
-              />
-              <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-            </Stack>
-            <StatusBar style="auto" />
-          </ThemeProvider>
-        </AppProvider>
+                  animationDuration: 250,
+                }}
+              >
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="attraction/[id]"
+                  options={{
+                    headerShown: false,
+                    presentation: 'card',
+                    animation: 'slide_from_right',
+                  }}
+                />
+                <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+              </Stack>
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </AppProvider>
+        </LanguageProvider>
       </ErrorBoundary>
     </SafeAreaProvider>
   );

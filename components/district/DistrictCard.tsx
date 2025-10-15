@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { IstanbulDistrict } from '@/types';
 import { DistrictInfo } from '@/constants/DistrictMetadata';
 import { getAttractionsByDistrict } from '@/services/attractionService';
+import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedDistrictField } from '@/utils/translations';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import Theme from '@/constants/theme';
 import { mediumHaptic } from '@/utils/haptics';
@@ -14,6 +16,7 @@ interface DistrictCardProps {
 }
 
 export default function DistrictCard({ district, info, onPress }: DistrictCardProps) {
+  const { t, language } = useLanguage();
   const attractions = getAttractionsByDistrict(district);
   const attractionCount = attractions.length;
 
@@ -34,21 +37,31 @@ export default function DistrictCard({ district, info, onPress }: DistrictCardPr
       accessibilityLabel={`${info.displayName} district`}
       accessibilityHint={`View ${attractionCount} attractions in ${info.displayName}`}
     >
-      <View style={styles.iconContainer}>
-        <IconSymbol
-          name={info.icon as any}
-          size={40}
-          color={Theme.colors.primary[500]}
-        />
+      <View style={styles.imageContainer}>
+        {info.image ? (
+          <Image
+            source={info.image}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.iconFallback}>
+            <IconSymbol
+              name={info.icon as any}
+              size={40}
+              color={Theme.colors.primary[500]}
+            />
+          </View>
+        )}
       </View>
       <View style={styles.content}>
-        <Text style={styles.name}>{info.displayName}</Text>
+        <Text style={styles.name}>{getTranslatedDistrictField(district, 'displayName', language, info.displayName)}</Text>
         <Text style={styles.description} numberOfLines={2}>
-          {info.description}
+          {getTranslatedDistrictField(district, 'description', language, info.description)}
         </Text>
         <View style={styles.footer}>
           <Text style={styles.attractionCount}>
-            {attractionCount} {attractionCount === 1 ? 'place' : 'places'}
+            {attractionCount} {attractionCount === 1 ? t('district.place') : t('district.places')}
           </Text>
           <IconSymbol
             name="chevron.right"
@@ -75,14 +88,23 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     transform: [{ scale: 0.98 }],
   },
-  iconContainer: {
+  imageContainer: {
     width: 72,
     height: 72,
     borderRadius: Theme.borderRadius.md,
+    overflow: 'hidden',
+    marginRight: Theme.spacing.base,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  iconFallback: {
+    width: '100%',
+    height: '100%',
     backgroundColor: Theme.colors.primary[50],
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Theme.spacing.base,
   },
   content: {
     flex: 1,

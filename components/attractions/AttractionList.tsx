@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { AttractionWithDistance } from '@/types';
+import { useLanguage } from '@/context/LanguageContext';
 import AttractionCard from './AttractionCard';
 import Theme from '@/constants/theme';
 import { mediumHaptic } from '@/utils/haptics';
@@ -28,6 +29,7 @@ export default function AttractionList({
   onRefresh,
   onAttractionPress,
 }: AttractionListProps) {
+  const { t } = useLanguage();
   const [refreshing, setRefreshing] = React.useState(false);
 
   const handleRefresh = async () => {
@@ -47,7 +49,7 @@ export default function AttractionList({
     return (
       <Animated.View entering={FadeIn.duration(300)} style={styles.centerContainer}>
         <ActivityIndicator size="large" color={Theme.colors.primary[500]} />
-        <Text style={styles.loadingText}>Finding attractions near you...</Text>
+        <Text style={styles.loadingText}>{t('attraction.loading')}</Text>
       </Animated.View>
     );
   }
@@ -57,17 +59,16 @@ export default function AttractionList({
     return (
       <Animated.View entering={FadeIn.duration(300)} style={styles.centerContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorTitle}>Oops!</Text>
+        <Text style={styles.errorTitle}>{t('common.error')}</Text>
         <Text style={styles.errorMessage}>{error}</Text>
-        <Pressable 
-          style={styles.retryButton} 
+        <Pressable
+          style={styles.retryButton}
           onPress={handleRetry}
           accessible={true}
           accessibilityRole="button"
-          accessibilityLabel="Try Again"
-          accessibilityHint="Retries loading attractions"
+          accessibilityLabel={t('common.retry')}
         >
-          <Text style={styles.retryButtonText}>Try Again</Text>
+          <Text style={styles.retryButtonText}>{t('common.retry')}</Text>
         </Pressable>
       </Animated.View>
     );
@@ -78,19 +79,18 @@ export default function AttractionList({
     return (
       <Animated.View entering={FadeIn.duration(300)} style={styles.centerContainer}>
         <Text style={styles.emptyIcon}>🗺️</Text>
-        <Text style={styles.emptyTitle}>No Attractions Found</Text>
+        <Text style={styles.emptyTitle}>{t('attraction.noAttractions')}</Text>
         <Text style={styles.emptyMessage}>
-          There are no attractions in your current area. Try moving to a different district.
+          {t('attraction.noAttractionsMessage')}
         </Text>
-        <Pressable 
-          style={styles.refreshButton} 
+        <Pressable
+          style={styles.refreshButton}
           onPress={handleRefresh}
           accessible={true}
           accessibilityRole="button"
-          accessibilityLabel="Refresh Location"
-          accessibilityHint="Refreshes your current location"
+          accessibilityLabel={t('location.refreshLocation')}
         >
-          <Text style={styles.refreshButtonText}>Refresh Location</Text>
+          <Text style={styles.refreshButtonText}>{t('location.refreshLocation')}</Text>
         </Pressable>
       </Animated.View>
     );

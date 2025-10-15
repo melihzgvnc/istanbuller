@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useLocation } from '@/hooks/useLocation';
 import { useAttractions } from '@/hooks/useAttractions';
+import { useLanguage } from '@/context/LanguageContext';
 import LocationPermission from '@/components/location/LocationPermission';
 import AttractionList from '@/components/attractions/AttractionList';
 import { DistrictPicker } from '@/components/district/DistrictPicker';
@@ -14,6 +15,7 @@ import { IstanbulDistrict } from '@/types';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   // District picker visibility state
   const [isPickerVisible, setIsPickerVisible] = useState(false);
@@ -131,16 +133,16 @@ export default function HomeScreen() {
     ) {
       // Show alert with options
       Alert.alert(
-        'District Detected',
-        `You're now in ${lastAutoDetectedDistrict}. Would you like to switch to automatic detection?`,
+        t('district.detected'),
+        t('district.detectedMessage').replace('{district}', lastAutoDetectedDistrict),
         [
           {
-            text: 'Keep Manual',
+            text: t('district.keepManual'),
             style: 'cancel',
             onPress: handleKeepManual,
           },
           {
-            text: 'Switch to Auto',
+            text: t('district.switchToAuto'),
             onPress: handleSwitchToAuto,
           },
         ],
@@ -179,7 +181,7 @@ export default function HomeScreen() {
 
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Nearby Attractions</Text>
+        <Text style={styles.title}>{t('home.nearbyAttractions')}</Text>
         {district && !isManualSelection && (
           <Text style={styles.subtitle}>
             {district}

@@ -9,6 +9,7 @@ import {
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { requestPermissions } from '@/services/locationService';
+import { useLanguage } from '@/context/LanguageContext';
 import Theme from '@/constants/theme';
 import { mediumHaptic, errorHaptic } from '@/utils/haptics';
 
@@ -21,6 +22,7 @@ export default function LocationPermission({
   onPermissionGranted,
   onPermissionDenied,
 }: LocationPermissionProps) {
+  const { t } = useLanguage();
   const [isRequesting, setIsRequesting] = useState(false);
   const [showSettingsPrompt, setShowSettingsPrompt] = useState(false);
 
@@ -29,7 +31,7 @@ export default function LocationPermission({
     setIsRequesting(true);
     try {
       const granted = await requestPermissions();
-      
+
       if (granted) {
         onPermissionGranted();
       } else {
@@ -59,14 +61,13 @@ export default function LocationPermission({
         <Animated.View entering={FadeInDown.duration(400).delay(100)} style={styles.iconContainer}>
           <Ionicons name="location-outline" size={80} color={Theme.colors.error[500]} />
         </Animated.View>
-        
+
         <Animated.Text entering={FadeInDown.duration(400).delay(200)} style={styles.title}>
-          Location Access Denied
+          {t('location.accessDenied')}
         </Animated.Text>
-        
+
         <Animated.Text entering={FadeInDown.duration(400).delay(300)} style={styles.description}>
-          To discover amazing attractions near you, we need access to your location.
-          Please enable location permissions in your device settings.
+          {t('location.settingsMessage')}
         </Animated.Text>
 
         <Animated.View entering={FadeInDown.duration(400).delay(400)} style={{ width: '100%' }}>
@@ -76,11 +77,10 @@ export default function LocationPermission({
             activeOpacity={0.8}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel="Open Settings"
-            accessibilityHint="Opens device settings to enable location permissions"
+            accessibilityLabel={t('location.openSettings')}
           >
             <Ionicons name="settings-outline" size={20} color={Theme.colors.text.inverse} />
-            <Text style={styles.primaryButtonText}>Open Settings</Text>
+            <Text style={styles.primaryButtonText}>{t('location.openSettings')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -89,10 +89,9 @@ export default function LocationPermission({
             activeOpacity={0.8}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel="Try Again"
-            accessibilityHint="Requests location permission again"
+            accessibilityLabel={t('common.retry')}
           >
-            <Text style={styles.secondaryButtonText}>Try Again</Text>
+            <Text style={styles.secondaryButtonText}>{t('common.retry')}</Text>
           </TouchableOpacity>
         </Animated.View>
       </Animated.View>
@@ -104,30 +103,29 @@ export default function LocationPermission({
       <Animated.View entering={FadeInDown.duration(400).delay(100)} style={styles.iconContainer}>
         <Ionicons name="location" size={80} color={Theme.colors.primary[500]} />
       </Animated.View>
-      
+
       <Animated.Text entering={FadeInDown.duration(400).delay(200)} style={styles.title}>
-        Discover Istanbul
+        {t('home.title')}
       </Animated.Text>
-      
+
       <Animated.Text entering={FadeInDown.duration(400).delay(300)} style={styles.description}>
-        We need your location to show you the best attractions in your current district.
-        Your location data stays private and is only used to enhance your experience.
+        {t('location.permissionMessage')}
       </Animated.Text>
 
       <Animated.View entering={FadeInDown.duration(400).delay(400)} style={styles.featureList}>
         <View style={styles.featureItem}>
           <Ionicons name="checkmark-circle" size={24} color={Theme.colors.success[500]} />
-          <Text style={styles.featureText}>Find nearby attractions</Text>
+          <Text style={styles.featureText}>{t('location.feature1')}</Text>
         </View>
-        
+
         <View style={styles.featureItem}>
           <Ionicons name="checkmark-circle" size={24} color={Theme.colors.success[500]} />
-          <Text style={styles.featureText}>Calculate walking distances</Text>
+          <Text style={styles.featureText}>{t('location.feature2')}</Text>
         </View>
-        
+
         <View style={styles.featureItem}>
           <Ionicons name="checkmark-circle" size={24} color={Theme.colors.success[500]} />
-          <Text style={styles.featureText}>Get personalized recommendations</Text>
+          <Text style={styles.featureText}>{t('location.feature3')}</Text>
         </View>
       </Animated.View>
 
@@ -139,17 +137,16 @@ export default function LocationPermission({
           activeOpacity={0.8}
           accessible={true}
           accessibilityRole="button"
-          accessibilityLabel="Enable Location"
-          accessibilityHint="Requests permission to access your location"
+          accessibilityLabel={t('location.grantPermission')}
         >
           <Ionicons name="navigate" size={20} color={Theme.colors.text.inverse} />
           <Text style={styles.primaryButtonText}>
-            {isRequesting ? 'Requesting...' : 'Enable Location'}
+            {isRequesting ? t('location.requesting') : t('location.grantPermission')}
           </Text>
         </TouchableOpacity>
 
         <Text style={styles.privacyNote}>
-          Your privacy matters. We never share your location data.
+          {t('location.privacyNote')}
         </Text>
       </Animated.View>
     </Animated.View>

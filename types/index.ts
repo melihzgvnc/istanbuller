@@ -65,4 +65,6 @@ export interface DistrictConfig {
   name: IstanbulDistrict;
   center: Coordinates;
   radiusKm: number;
+  description: string;
+  image?: string;
 }

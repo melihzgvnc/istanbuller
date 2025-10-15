@@ -7,7 +7,8 @@
         "longitude": 28.9784
       },
       "radiusKm": 2.5,
-      "description": "Historic heart of Istanbul, home to major Byzantine and Ottoman monuments"
+      "description": "Historic heart of Istanbul, home to major Byzantine and Ottoman monuments",
+      "image": "../../assets/images/districts/sultanahmet.jpg"
     },
     {
       "name": "Beyoğlu",
@@ -16,7 +17,8 @@
         "longitude": 28.9784
       },
       "radiusKm": 3.0,
-      "description": "Modern cultural center with İstiklal Avenue, Galata Tower, and vibrant nightlife"
+      "description": "Modern cultural center with İstiklal Avenue, Galata Tower, and vibrant nightlife",
+      "image": "../../assets/images/districts/beyoglu.jpg"
     },
     {
       "name": "Beşiktaş",
@@ -25,7 +27,8 @@
         "longitude": 29.0078
       },
       "radiusKm": 2.8,
-      "description": "Bosphorus district featuring palaces, parks, and waterfront promenades"
+      "description": "Bosphorus district featuring palaces, parks, and waterfront promenades",
+      "image": "../../assets/images/districts/besiktas.jpg"
     },
     {
       "name": "Kadıköy",
@@ -34,7 +37,8 @@
         "longitude": 29.0258
       },
       "radiusKm": 3.5,
-      "description": "Vibrant Asian side district known for markets, cafes, and bohemian atmosphere"
+      "description": "Vibrant Asian side district known for markets, cafes, and bohemian atmosphere",
+      "image": "../../assets/images/districts/kadikoy.jpg"
     },
     {
       "name": "Üsküdar",
@@ -52,7 +56,8 @@
         "longitude": 29.0264
       },
       "radiusKm": 1.5,
-      "description": "Charming Bosphorus neighborhood famous for its mosque and waterfront cafes"
+      "description": "Charming Bosphorus neighborhood famous for its mosque and waterfront cafes",
+      "image": "../../assets/images/districts/ortakoy.jpg"
     },
     {
       "name": "Eminönü",
@@ -61,7 +66,8 @@
         "longitude": 28.9711
       },
       "radiusKm": 2.0,
-      "description": "Historic area with Spice Bazaar, Galata Bridge, and ferry terminals"
+      "description": "Historic area with Spice Bazaar, Galata Bridge, and ferry terminals",
+      "image": "../../assets/images/districts/eminonu.jpg"
     },
     {
       "name": "Galata",
@@ -70,7 +76,8 @@
         "longitude": 28.9733
       },
       "radiusKm": 1.2,
-      "description": "Iconic neighborhood around Galata Tower with stunning city views"
+      "description": "Iconic neighborhood around Galata Tower with stunning city views",
+      "image": "../../assets/images/districts/galata.jpg"
     },
     {
       "name": "Balat",
@@ -79,7 +86,8 @@
         "longitude": 28.9481
       },
       "radiusKm": 1.5,
-      "description": "Colorful historic neighborhood known for its old houses and cafes"
+      "description": "Colorful historic neighborhood known for its old houses and cafes",
+      "image": "../../assets/images/districts/balat.jpg"
     },
     {
       "name": "Fener",
@@ -88,7 +96,8 @@
         "longitude": 28.9473
       },
       "radiusKm": 1.2,
-      "description": "Historic Greek Orthodox neighborhood with old churches and narrow streets"
+      "description": "Historic Greek Orthodox neighborhood with old churches and narrow streets",
+      "image": "../../assets/images/districts/fener.jpg"
     },
     {
       "name": "Taksim",
@@ -97,7 +106,8 @@
         "longitude": 28.9856
       },
       "radiusKm": 1.8,
-      "description": "Central square and lively area with shops, restaurants, and nightlife"
+      "description": "Central square and lively area with shops, restaurants, and nightlife",
+      "image": "../../assets/images/districts/taksim.jpg"
     },
     {
       "name": "Nişantaşı",
@@ -106,7 +116,8 @@
         "longitude": 28.9903
       },
       "radiusKm": 1.5,
-      "description": "Upscale neighborhood with luxury boutiques and cafes"
+      "description": "Upscale neighborhood with luxury boutiques and cafes",
+      "image": "../../assets/images/districts/nisantasi.jpg"
     },
     {
       "name": "Rumeli Hisarı",
@@ -115,7 +126,8 @@
         "longitude": 29.0571
       },
       "radiusKm": 1.3,
-      "description": "Historic fortress area with Bosphorus views and cafes"
+      "description": "Historic fortress area with Bosphorus views and cafes",
+      "image": "../../assets/images/districts/rumelihisari.jpg"
     },
     {
       "name": "Bebek",
@@ -124,7 +136,8 @@
         "longitude": 29.042
       },
       "radiusKm": 1.3,
-      "description": "Elegant Bosphorus neighborhood popular for seaside walks and cafes"
+      "description": "Elegant Bosphorus neighborhood popular for seaside walks and cafes",
+      "image": "../../assets/images/districts/bebek.jpg"
     },
     {
       "name": "Moda",
@@ -133,7 +146,8 @@
         "longitude": 29.0242
       },
       "radiusKm": 1.5,
-      "description": "Trendy neighborhood in Kadıköy with sea views, cafes, and parks"
+      "description": "Trendy neighborhood in Kadıköy with sea views, cafes, and parks",
+      "image": "../../assets/images/districts/moda.jpg"
     },
     {
       "name": "Princes’ Islands",
@@ -142,7 +156,8 @@
         "longitude": 29.09
       },
       "radiusKm": 6.0,
-      "description": "Car-free islands in the Marmara Sea famous for their beaches and mansions"
+      "description": "Car-free islands in the Marmara Sea famous for their beaches and mansions",
+      "image": "../../assets/images/districts/princesisland.jpg"
     }
   ]
 }
