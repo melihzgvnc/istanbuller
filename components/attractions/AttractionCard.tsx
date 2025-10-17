@@ -1,14 +1,18 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { AttractionWithDistance } from '@/types';
-import { useLanguage } from '@/context/LanguageContext';
-import { getTranslatedAttractionField } from '@/utils/translations';
-import DistanceBadge from './DistanceBadge';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { ATTRACTION_CARD_IMAGE_CONFIG } from '@/constants/ImageConfig';
-import Theme from '@/constants/theme';
-import { mediumHaptic } from '@/utils/haptics';
+import OptimizedImage from "@/components/ui/OptimizedImage";
+import { ATTRACTION_CARD_IMAGE_CONFIG } from "@/constants/ImageConfig";
+import Theme from "@/constants/theme";
+import { useLanguage } from "@/context/LanguageContext";
+import { AttractionWithDistance } from "@/types";
+import { mediumHaptic } from "@/utils/haptics";
+import { getTranslatedAttractionField } from "@/utils/translations";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import DistanceBadge from "./DistanceBadge";
 
 interface AttractionCardProps {
   attraction: AttractionWithDistance;
@@ -17,9 +21,15 @@ interface AttractionCardProps {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export default function AttractionCard({ attraction, onPress }: AttractionCardProps) {
+export default function AttractionCard({
+  attraction,
+  onPress,
+}: AttractionCardProps) {
   const { language } = useLanguage();
   const scale = useSharedValue(1);
+  const scheme = (
+    typeof window === "undefined" ? "light" : (window as any)
+  ) as any;
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -61,13 +71,23 @@ export default function AttractionCard({ attraction, onPress }: AttractionCardPr
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.name} numberOfLines={2}>
-            {getTranslatedAttractionField(attraction.id, 'name', language, attraction.name)}
+            {getTranslatedAttractionField(
+              attraction.id,
+              "name",
+              language,
+              attraction.name
+            )}
           </Text>
           <Text style={styles.category}>{attraction.category}</Text>
         </View>
 
         <Text style={styles.summary} numberOfLines={2}>
-          {getTranslatedAttractionField(attraction.id, 'summary', language, attraction.summary)}
+          {getTranslatedAttractionField(
+            attraction.id,
+            "summary",
+            language,
+            attraction.summary
+          )}
         </Text>
 
         <DistanceBadge distance={attraction.distance} />
@@ -78,15 +98,15 @@ export default function AttractionCard({ attraction, onPress }: AttractionCardPr
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Theme.colors.surface,
     borderRadius: Theme.borderRadius.lg,
     marginHorizontal: Theme.spacing.base,
     marginVertical: Theme.spacing.sm,
-    overflow: 'hidden',
-    ...Theme.shadows.md,
+    overflow: "hidden",
+    ...Theme.shadows.base,
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 200,
   },
   content: {

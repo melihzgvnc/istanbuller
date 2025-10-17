@@ -1,23 +1,33 @@
-import React from 'react';
 import {
-  View,
-  Text,
+  Accessibility,
+  BorderRadius,
+  Colors,
+  Shadows,
+  Spacing,
+  Typography,
+} from "@/constants/theme";
+import { Language, useLanguage } from "@/context/LanguageContext";
+import * as Haptics from "expo-haptics";
+import React from "react";
+import {
   Modal,
-  StyleSheet,
-  TouchableOpacity,
-  Pressable,
   Platform,
-} from 'react-native';
-import { useLanguage, Language } from '@/context/LanguageContext';
-import { Colors, Spacing, BorderRadius, Typography, Shadows, Accessibility } from '@/constants/theme';
-import * as Haptics from 'expo-haptics';
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface LanguageModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
-export default function LanguageModal({ visible, onClose }: LanguageModalProps) {
+export default function LanguageModal({
+  visible,
+  onClose,
+}: LanguageModalProps) {
   const { language, setLanguage, t } = useLanguage();
 
   const handleLanguageChange = async (lang: Language) => {
@@ -34,9 +44,14 @@ export default function LanguageModal({ visible, onClose }: LanguageModalProps) 
     onClose();
   };
 
-  const languages: { code: Language; name: string; nativeName: string; flag: string }[] = [
-    { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
-    { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
+  const languages: {
+    code: Language;
+    name: string;
+    nativeName: string;
+    flag: string;
+  }[] = [
+    { code: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
+    { code: "tr", name: "Turkish", nativeName: "Türkçe", flag: "🇹🇷" },
   ];
 
   return (
@@ -53,7 +68,7 @@ export default function LanguageModal({ visible, onClose }: LanguageModalProps) 
             <View style={styles.modalContent}>
               {/* Header */}
               <View style={styles.header}>
-                <Text style={styles.headerTitle}>{t('tab.language')}</Text>
+                <Text style={styles.headerTitle}>{t("tab.language")}</Text>
                 <TouchableOpacity
                   onPress={onClose}
                   style={styles.closeButton}
@@ -88,7 +103,8 @@ export default function LanguageModal({ visible, onClose }: LanguageModalProps) 
                       <Text
                         style={[
                           styles.languageSubtext,
-                          language === lang.code && styles.languageSubtextActive,
+                          language === lang.code &&
+                            styles.languageSubtextActive,
                         ]}
                       >
                         {lang.name}
@@ -114,26 +130,26 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: Colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContainer: {
-    width: '85%',
+    width: "85%",
     maxWidth: 400,
   },
   modalContent: {
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.xl,
-    overflow: 'hidden',
+    overflow: "hidden",
     ...Platform.select({
       ios: Shadows.lg,
       android: { elevation: 8 },
     }),
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.base,
     borderBottomWidth: 1,
@@ -147,8 +163,8 @@ const styles = StyleSheet.create({
   closeButton: {
     width: Accessibility.minTouchTarget,
     height: Accessibility.minTouchTarget,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: BorderRadius.full,
   },
   closeButtonText: {
@@ -160,19 +176,19 @@ const styles = StyleSheet.create({
     padding: Spacing.base,
   },
   languageItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: Colors.surface,
     padding: Spacing.base,
     borderRadius: BorderRadius.md,
     marginBottom: Spacing.sm,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: "transparent",
     minHeight: Accessibility.minTouchTarget,
   },
   languageItemActive: {
-    borderColor: Colors.primary[500],
-    backgroundColor: Colors.primary[50],
+    borderColor: Colors.primary[400],
+    backgroundColor: Colors.neutral[50],
   },
   flag: {
     fontSize: 32,
@@ -202,12 +218,12 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 14,
     backgroundColor: Colors.primary[500],
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   checkmarkText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

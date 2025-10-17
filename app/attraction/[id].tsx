@@ -1,31 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import DistanceBadge from "@/components/attractions/DistanceBadge";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import OptimizedImage from "@/components/ui/OptimizedImage";
+import { HERO_IMAGE_CONFIG } from "@/constants/ImageConfig";
+import Theme from "@/constants/theme";
+import { useLanguage } from "@/context/LanguageContext";
+import { useLocation } from "@/hooks/useLocation";
+import { getAttractionById } from "@/services/attractionService";
+import { enrichWithDistance } from "@/services/distanceService";
+import { AttractionWithDistance } from "@/types";
+import { mediumHaptic } from "@/utils/haptics";
+import { openGoogleMapsDirections } from "@/utils/navigation";
+import { showErrorToast } from "@/utils/toast";
+import { getTranslatedAttractionField } from "@/utils/translations";
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  StatusBar,
   ActivityIndicator,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { getAttractionById } from '@/services/attractionService';
-import { enrichWithDistance } from '@/services/distanceService';
-import { useLocation } from '@/hooks/useLocation';
-import { useLanguage } from '@/context/LanguageContext';
-import { getTranslatedAttractionField } from '@/utils/translations';
-import { AttractionWithDistance } from '@/types';
-import DistanceBadge from '@/components/attractions/DistanceBadge';
-import ErrorBoundary from '@/components/ErrorBoundary';
-import { showErrorToast } from '@/utils/toast';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { HERO_IMAGE_CONFIG } from '@/constants/ImageConfig';
-import Theme from '@/constants/theme';
-import { mediumHaptic } from '@/utils/haptics';
-import { openGoogleMapsDirections } from '@/utils/navigation';
+  Pressable,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -35,7 +41,9 @@ export default function AttractionDetailScreen() {
   const { location } = useLocation();
   const { t, language } = useLanguage();
 
-  const [attraction, setAttraction] = useState<AttractionWithDistance | null>(null);
+  const [attraction, setAttraction] = useState<AttractionWithDistance | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,8 +54,8 @@ export default function AttractionDetailScreen() {
         setError(null);
 
         // Validate attraction ID
-        if (!id || typeof id !== 'string') {
-          const errorMsg = 'Invalid attraction ID';
+        if (!id || typeof id !== "string") {
+          const errorMsg = "Invalid attraction ID";
           setError(errorMsg);
           showErrorToast(errorMsg);
           setLoading(false);
@@ -58,7 +66,7 @@ export default function AttractionDetailScreen() {
         const attractionData = getAttractionById(id);
 
         if (!attractionData) {
-          const errorMsg = 'Attraction not found';
+          const errorMsg = "Attraction not found";
           setError(errorMsg);
           showErrorToast(errorMsg);
           setLoading(false);
@@ -67,7 +75,7 @@ export default function AttractionDetailScreen() {
 
         // Validate attraction data
         if (!attractionData.name || !attractionData.description) {
-          const errorMsg = 'Invalid attraction data';
+          const errorMsg = "Invalid attraction data";
           setError(errorMsg);
           showErrorToast(errorMsg);
           setLoading(false);
@@ -80,7 +88,10 @@ export default function AttractionDetailScreen() {
         // Enrich with distance if calculation point is available
         if (calculationPoint) {
           try {
-            const enrichedAttractions = enrichWithDistance([attractionData], calculationPoint);
+            const enrichedAttractions = enrichWithDistance(
+              [attractionData],
+              calculationPoint
+            );
             if (enrichedAttractions && enrichedAttractions.length > 0) {
               setAttraction(enrichedAttractions[0]);
             } else {
@@ -95,7 +106,7 @@ export default function AttractionDetailScreen() {
               });
             }
           } catch (distanceError) {
-            console.warn('Failed to calculate distance:', distanceError);
+            console.warn("Failed to calculate distance:", distanceError);
             // Set attraction without distance info
             setAttraction({
               ...attractionData,
@@ -120,7 +131,10 @@ export default function AttractionDetailScreen() {
 
         setLoading(false);
       } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : 'Failed to load attraction details';
+        const errorMsg =
+          err instanceof Error
+            ? err.message
+            : "Failed to load attraction details";
         setError(errorMsg);
         showErrorToast(errorMsg);
         setLoading(false);
@@ -165,8 +179,11 @@ export default function AttractionDetailScreen() {
   // Loading state
   if (loading) {
     return (
-      <SafeAreaView style={styles.centerContainer} edges={['top', 'bottom']}>
-        <StatusBar barStyle="light-content" backgroundColor={Theme.colors.background} />
+      <SafeAreaView style={styles.centerContainer} edges={["top", "bottom"]}>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={Theme.colors.background}
+        />
         <ActivityIndicator size="large" color={Theme.colors.primary[500]} />
       </SafeAreaView>
     );
@@ -175,13 +192,25 @@ export default function AttractionDetailScreen() {
   // Error state
   if (error || !attraction) {
     return (
-      <SafeAreaView style={styles.centerContainer} edges={['top', 'bottom']}>
-        <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.background} />
-        <Animated.View entering={FadeIn.duration(300)} style={{ alignItems: 'center' }}>
-          <Ionicons name="alert-circle-outline" size={64} color={Theme.colors.error[500]} />
-          <Text style={styles.errorText}>{error || t('attraction.notFound')}</Text>
+      <SafeAreaView style={styles.centerContainer} edges={["top", "bottom"]}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={Theme.colors.background}
+        />
+        <Animated.View
+          entering={FadeIn.duration(300)}
+          style={{ alignItems: "center" }}
+        >
+          <Ionicons
+            name="alert-circle-outline"
+            size={64}
+            color={Theme.colors.error[500]}
+          />
+          <Text style={styles.errorText}>
+            {error || t("attraction.notFound")}
+          </Text>
           <Pressable style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backButtonText}>{t('common.goBack')}</Text>
+            <Text style={styles.backButtonText}>{t("common.goBack")}</Text>
           </Pressable>
         </Animated.View>
       </SafeAreaView>
@@ -191,9 +220,16 @@ export default function AttractionDetailScreen() {
   return (
     <ErrorBoundary>
       <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor="transparent"
+          translucent
+        />
 
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Hero Image */}
           <View style={styles.imageContainer}>
             <OptimizedImage
@@ -222,17 +258,35 @@ export default function AttractionDetailScreen() {
           </View>
 
           {/* Content */}
-          <Animated.View entering={FadeInDown.duration(400).delay(100)} style={styles.content}>
+          <Animated.View
+            entering={FadeInDown.duration(400).delay(100)}
+            style={styles.content}
+          >
             {/* Header Section */}
             <View style={styles.headerSection}>
-              <Text style={styles.name}>{getTranslatedAttractionField(attraction.id, 'name', language, attraction.name)}</Text>
+              <Text style={styles.name}>
+                {getTranslatedAttractionField(
+                  attraction.id,
+                  "name",
+                  language,
+                  attraction.name
+                )}
+              </Text>
               <View style={styles.metaRow}>
                 <View style={styles.categoryBadge}>
-                  <Ionicons name="pricetag" size={16} color={Theme.colors.primary[500]} />
+                  <Ionicons
+                    name="pricetag"
+                    size={16}
+                    color={Theme.colors.primary[500]}
+                  />
                   <Text style={styles.categoryText}>{attraction.category}</Text>
                 </View>
                 <View style={styles.districtBadge}>
-                  <Ionicons name="location" size={16} color={Theme.colors.success[500]} />
+                  <Ionicons
+                    name="location"
+                    size={16}
+                    color={Theme.colors.success[500]}
+                  />
                   <Text style={styles.districtText}>{attraction.district}</Text>
                 </View>
               </View>
@@ -241,22 +295,37 @@ export default function AttractionDetailScreen() {
             {/* Distance Information */}
             {location && attraction.distance.walkingDistanceKm > 0 && (
               <View style={styles.distanceSection}>
-                <Text style={styles.sectionTitle}>{t('attraction.distanceFromYou')}</Text>
+                <Text style={styles.sectionTitleSecondary}>
+                  {t("attraction.distanceFromYou")}
+                </Text>
                 <DistanceBadge distance={attraction.distance} />
               </View>
             )}
 
             {/* Description Section */}
             <View style={styles.descriptionSection}>
-              <Text style={styles.sectionTitle}>{t('attraction.about')}</Text>
-              <Text style={styles.description}>{getTranslatedAttractionField(attraction.id, 'description', language, attraction.description)}</Text>
+              <Text style={styles.sectionTitle}>{t("attraction.about")}</Text>
+              <Text style={styles.description}>
+                {getTranslatedAttractionField(
+                  attraction.id,
+                  "description",
+                  language,
+                  attraction.description
+                )}
+              </Text>
             </View>
 
             {/* Address Section */}
             <View style={styles.addressSection}>
-              <Text style={styles.sectionTitle}>{t('attraction.address')}</Text>
+              <Text style={styles.sectionTitleSecondary}>
+                {t("attraction.address")}
+              </Text>
               <View style={styles.addressRow}>
-                <Ionicons name="navigate" size={20} color={Theme.colors.text.secondary} />
+                <Ionicons
+                  name="navigate"
+                  size={20}
+                  color={Theme.colors.text.secondary}
+                />
                 <Text style={styles.address}>{attraction.address}</Text>
               </View>
             </View>
@@ -267,10 +336,12 @@ export default function AttractionDetailScreen() {
               onPress={handleNavigate}
               accessible={true}
               accessibilityRole="button"
-              accessibilityLabel={t('attraction.takeMeThere')}
+              accessibilityLabel={t("attraction.takeMeThere")}
             >
-              <Ionicons name="navigate-circle" size={24} color="#FFFFFF" />
-              <Text style={styles.navigationButtonText}>{t('attraction.takeMeThere')}</Text>
+              <Ionicons name="navigate-circle" size={22} color="#FFFFFF" />
+              <Text style={styles.navigationButtonText}>
+                {t("attraction.takeMeThere")}
+              </Text>
             </Pressable>
           </Animated.View>
         </ScrollView>
@@ -286,8 +357,8 @@ const styles = StyleSheet.create({
   },
   centerContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: Theme.colors.background,
     padding: Theme.spacing.xl,
   },
@@ -295,24 +366,27 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageContainer: {
-    position: 'relative',
-    width: '100%',
-    height: 400,
+    position: "relative",
+    width: "100%",
+    height: 180,
+    borderBottomLeftRadius: Theme.borderRadius.lg,
+    borderBottomRightRadius: Theme.borderRadius.lg,
+    overflow: "hidden",
   },
   heroImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   backButtonOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 48,
     left: Theme.spacing.base,
     width: Theme.accessibility.minTouchTarget,
     height: Theme.accessibility.minTouchTarget,
     borderRadius: Theme.borderRadius.full,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   content: {
     padding: Theme.spacing.lg,
@@ -322,23 +396,23 @@ const styles = StyleSheet.create({
     gap: Theme.spacing.md,
   },
   name: {
-    fontSize: Theme.typography.fontSize['4xl'],
+    fontSize: Theme.typography.fontSize["3xl"],
     fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
-    lineHeight: 40,
+    lineHeight: 34,
   },
   metaRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: Theme.spacing.md,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   categoryBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: Theme.spacing.xs + 2,
     paddingHorizontal: Theme.spacing.md,
     paddingVertical: Theme.spacing.xs + 2,
-    backgroundColor: Theme.colors.primary[50],
+    backgroundColor: Theme.colors.neutral[50],
     borderRadius: Theme.borderRadius.lg,
     minHeight: Theme.accessibility.minTouchTarget / 1.5,
   },
@@ -348,12 +422,12 @@ const styles = StyleSheet.create({
     color: Theme.colors.primary[500],
   },
   districtBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: Theme.spacing.xs + 2,
     paddingHorizontal: Theme.spacing.md,
     paddingVertical: Theme.spacing.xs + 2,
-    backgroundColor: Theme.colors.success[50],
+    backgroundColor: Theme.colors.neutral[50],
     borderRadius: Theme.borderRadius.lg,
     minHeight: Theme.accessibility.minTouchTarget / 1.5,
   },
@@ -363,57 +437,76 @@ const styles = StyleSheet.create({
     color: Theme.colors.success[500],
   },
   distanceSection: {
-    gap: Theme.spacing.md,
+    gap: Theme.spacing.sm,
   },
   sectionTitle: {
-    fontSize: Theme.typography.fontSize.xl,
+    fontSize: Theme.typography.fontSize["2xl"],
     fontWeight: Theme.typography.fontWeight.bold,
+    color: Theme.colors.text.primary,
+    marginBottom: Theme.spacing.xs,
+  },
+  sectionTitleSecondary: {
+    fontSize: Theme.typography.fontSize.lg,
+    fontWeight: Theme.typography.fontWeight.semibold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs,
   },
   descriptionSection: {
     gap: Theme.spacing.md,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.borderRadius.lg,
+    padding: Theme.spacing.lg,
+    borderWidth: 1,
+    borderColor: Theme.colors.border.default,
+    borderLeftWidth: 3,
+    borderLeftColor: Theme.colors.primary[400],
+    paddingLeft: Theme.spacing.xl,
   },
   description: {
-    fontSize: Theme.typography.fontSize.base,
+    fontSize: Theme.typography.fontSize.xl,
     color: Theme.colors.text.secondary,
-    lineHeight: 26,
+    lineHeight: 30,
   },
   addressSection: {
-    gap: Theme.spacing.md,
+    gap: Theme.spacing.sm,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.borderRadius.lg,
+    padding: Theme.spacing.base,
+    borderWidth: 1,
+    borderColor: Theme.colors.border.default,
   },
   addressRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: Theme.spacing.md,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   address: {
     flex: 1,
-    fontSize: Theme.typography.fontSize.base,
+    fontSize: Theme.typography.fontSize.sm,
     color: Theme.colors.text.secondary,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   navigationButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Theme.spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Theme.spacing.sm,
     backgroundColor: Theme.colors.primary[500],
-    paddingVertical: Theme.spacing.base,
-    paddingHorizontal: Theme.spacing.xl,
-    borderRadius: Theme.borderRadius.lg,
-    minHeight: Theme.accessibility.minTouchTarget,
-    marginBottom: Theme.spacing.xl,
+    paddingVertical: Theme.spacing.sm,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.borderRadius.md,
+    minHeight: Theme.accessibility.minTouchTarget - 6,
+    marginBottom: Theme.spacing.lg,
   },
   navigationButtonText: {
-    fontSize: Theme.typography.fontSize.lg,
-    fontWeight: Theme.typography.fontWeight.bold,
+    fontSize: Theme.typography.fontSize.base,
+    fontWeight: Theme.typography.fontWeight.semibold,
     color: Theme.colors.text.inverse,
   },
   errorText: {
     fontSize: Theme.typography.fontSize.lg,
     color: Theme.colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: Theme.spacing.base,
     marginBottom: Theme.spacing.xl,
   },
@@ -423,7 +516,7 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.primary[500],
     borderRadius: Theme.borderRadius.base,
     minHeight: Theme.accessibility.minTouchTarget,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   backButtonText: {
     fontSize: Theme.typography.fontSize.base,

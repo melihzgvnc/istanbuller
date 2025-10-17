@@ -1,17 +1,16 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { Ionicons } from '@expo/vector-icons';
-import { useLanguage } from '@/context/LanguageContext';
-import Theme from '@/constants/theme';
-import { mediumHaptic } from '@/utils/haptics';
+import Theme from "@/constants/theme";
+import { useLanguage } from "@/context/LanguageContext";
+import { mediumHaptic } from "@/utils/haptics";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
-export type ErrorType = 'no-district' | 'gps-timeout' | 'services-disabled' | 'permission-denied';
+export type ErrorType =
+  | "no-district"
+  | "gps-timeout"
+  | "services-disabled"
+  | "permission-denied";
 
 interface DistrictSelectionPromptProps {
   onSelectDistrict: () => void;
@@ -28,32 +27,32 @@ interface ErrorConfig {
 }
 
 const ERROR_CONFIGS: Record<ErrorType, ErrorConfig> = {
-  'no-district': {
-    icon: 'help-circle-outline',
-    iconColor: Theme.colors.warning[500],
-    titleKey: 'district.noDistrictTitle',
-    messageKey: 'district.noDistrictMessage',
+  "no-district": {
+    icon: "map-outline",
+    iconColor: Theme.colors.primary[500],
+    titleKey: "district.noDistrictTitle",
+    messageKey: "district.noDistrictMessage",
     showSecondaryButton: true,
   },
-  'gps-timeout': {
-    icon: 'time-outline',
-    iconColor: Theme.colors.warning[500],
-    titleKey: 'district.gpsTimeoutTitle',
-    messageKey: 'district.gpsTimeoutMessage',
+  "gps-timeout": {
+    icon: "time-outline",
+    iconColor: Theme.colors.primary[500],
+    titleKey: "district.gpsTimeoutTitle",
+    messageKey: "district.gpsTimeoutMessage",
     showSecondaryButton: true,
   },
-  'services-disabled': {
-    icon: 'location-outline',
+  "services-disabled": {
+    icon: "location-outline",
     iconColor: Theme.colors.error[500],
-    titleKey: 'district.servicesDisabledTitle',
-    messageKey: 'district.servicesDisabledMessage',
+    titleKey: "district.servicesDisabledTitle",
+    messageKey: "district.servicesDisabledMessage",
     showSecondaryButton: true,
   },
-  'permission-denied': {
-    icon: 'lock-closed-outline',
+  "permission-denied": {
+    icon: "lock-closed-outline",
     iconColor: Theme.colors.error[500],
-    titleKey: 'district.permissionNeededTitle',
-    messageKey: 'district.permissionNeededMessage',
+    titleKey: "district.permissionNeededTitle",
+    messageKey: "district.permissionNeededMessage",
     showSecondaryButton: true,
   },
 };
@@ -61,7 +60,7 @@ const ERROR_CONFIGS: Record<ErrorType, ErrorConfig> = {
 export default function DistrictSelectionPrompt({
   onSelectDistrict,
   onRetryLocation,
-  errorType = 'no-district',
+  errorType = "no-district",
 }: DistrictSelectionPromptProps) {
   const { t } = useLanguage();
   const config = ERROR_CONFIGS[errorType];
@@ -82,11 +81,7 @@ export default function DistrictSelectionPrompt({
         entering={FadeInDown.duration(400).delay(100)}
         style={styles.iconContainer}
       >
-        <Ionicons
-          name={config.icon}
-          size={64}
-          color={config.iconColor}
-        />
+        <Ionicons name={config.icon} size={64} color={config.iconColor} />
       </Animated.View>
 
       <Animated.Text
@@ -113,7 +108,7 @@ export default function DistrictSelectionPrompt({
           activeOpacity={0.8}
           accessible={true}
           accessibilityRole="button"
-          accessibilityLabel={t('district.chooseManually')}
+          accessibilityLabel={t("district.chooseManually")}
         >
           <Ionicons
             name="map-outline"
@@ -121,7 +116,7 @@ export default function DistrictSelectionPrompt({
             color={Theme.colors.text.inverse}
           />
           <Text style={styles.primaryButtonText}>
-            {t('district.chooseManually')}
+            {t("district.chooseManually")}
           </Text>
         </TouchableOpacity>
 
@@ -132,10 +127,10 @@ export default function DistrictSelectionPrompt({
             activeOpacity={0.8}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel={t('location.retryLocation')}
+            accessibilityLabel={t("location.retryLocation")}
           >
             <Text style={styles.secondaryButtonText}>
-              {t('location.retryLocation')}
+              {t("location.retryLocation")}
             </Text>
           </TouchableOpacity>
         )}
@@ -147,47 +142,48 @@ export default function DistrictSelectionPrompt({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "flex-start",
+    alignItems: "center",
     padding: Theme.spacing.xl,
     backgroundColor: Theme.colors.background,
+    paddingTop: Theme.spacing["2xl"],
   },
   iconContainer: {
-    marginBottom: Theme.spacing.xl,
-    padding: Theme.spacing.lg,
-    backgroundColor: Theme.colors.surface,
+    marginBottom: Theme.spacing.lg,
+    padding: Theme.spacing.base,
+    backgroundColor: Theme.colors.neutral[50],
     borderRadius: Theme.borderRadius.full,
   },
   title: {
-    fontSize: Theme.typography.fontSize['2xl'],
+    fontSize: Theme.typography.fontSize.xl,
     fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.base,
-    textAlign: 'center',
+    textAlign: "center",
   },
   message: {
     fontSize: Theme.typography.fontSize.base,
     color: Theme.colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 24,
-    marginBottom: Theme.spacing['2xl'],
+    marginBottom: Theme.spacing.xl,
     paddingHorizontal: Theme.spacing.sm,
   },
   buttonContainer: {
-    width: '100%',
+    width: "100%",
   },
   primaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: Theme.colors.primary[500],
     paddingVertical: Theme.spacing.base,
-    paddingHorizontal: Theme.spacing['2xl'],
+    paddingHorizontal: Theme.spacing["2xl"],
     borderRadius: Theme.borderRadius.md,
-    width: '100%',
+    width: "100%",
     marginBottom: Theme.spacing.base,
     minHeight: Theme.accessibility.minTouchTarget,
-    ...Theme.shadows.md,
+    ...Theme.shadows.base,
   },
   primaryButtonText: {
     color: Theme.colors.text.inverse,
@@ -201,11 +197,11 @@ const styles = StyleSheet.create({
     borderRadius: Theme.borderRadius.base,
     marginBottom: Theme.spacing.base,
     minHeight: Theme.accessibility.minTouchTarget,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   secondaryButtonText: {
-    color: Theme.colors.primary[500],
+    color: Theme.colors.primary[700],
     fontSize: Theme.typography.fontSize.base,
     fontWeight: Theme.typography.fontWeight.semibold,
   },
