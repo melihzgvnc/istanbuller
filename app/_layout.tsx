@@ -4,6 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -12,6 +13,9 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { AppProvider } from "@/context/AppContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+
+// Keep the splash screen visible while we initialize
+SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -28,24 +32,31 @@ try {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-  // Initialize AdMob SDK only if available
+  // Initialize app and hide splash screen
   useEffect(() => {
-    const initializeAdMob = async () => {
-      if (!mobileAds) {
-        console.log("Skipping AdMob initialization - not available in this environment");
-        return;
-      }
-
+    const initializeApp = async () => {
       try {
-        await mobileAds().initialize();
-        console.log("AdMob SDK initialized successfully");
+        // Initialize AdMob SDK only if available
+        if (mobileAds) {
+          try {
+            await mobileAds().initialize();
+            console.log("AdMob SDK initialized successfully");
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.warn("AdMob initialization failed:", errorMessage);
+          }
+        } else {
+          console.log("Skipping AdMob initialization - not available in this environment");
+        }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.warn("AdMob initialization failed:", errorMessage);
+        console.error("App initialization error:", error);
+      } finally {
+        // Hide splash screen after initialization
+        await SplashScreen.hideAsync();
       }
     };
 
-    initializeAdMob();
+    initializeApp();
   }, []);
 
   return (
