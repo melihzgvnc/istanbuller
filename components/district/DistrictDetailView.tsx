@@ -32,8 +32,24 @@ export default function DistrictDetailView({
 }: DistrictDetailViewProps) {
   const router = useRouter();
   const { t, language } = useLanguage();
-  const districtInfo = getDistrictMetadata(district);
-  const districtConfig = getDistrictConfig(district);
+
+  // Add error handling for district metadata
+  let districtInfo;
+  let districtConfig;
+  try {
+    districtInfo = getDistrictMetadata(district);
+    districtConfig = getDistrictConfig(district);
+  } catch (err) {
+    console.error(`Error loading district metadata for ${district}:`, err);
+    return (
+      <View style={styles.container}>
+        <Text>Error loading district information</Text>
+        <Pressable onPress={onBack}>
+          <Text>Go Back</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   // Use district center as reference point for distance calculations
   const { attractions, loading, error, refresh } = useAttractions({
@@ -42,7 +58,6 @@ export default function DistrictDetailView({
     referencePoint: districtConfig?.center,
     isManualSelection: true,
   });
-
   const handleBack = () => {
     mediumHaptic();
     onBack();

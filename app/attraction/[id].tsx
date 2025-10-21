@@ -1,9 +1,11 @@
+import BannerAdComponent from "@/components/ads/BannerAd";
 import DistanceBadge from "@/components/attractions/DistanceBadge";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { HERO_IMAGE_CONFIG } from "@/constants/ImageConfig";
 import Theme from "@/constants/theme";
 import { useLanguage } from "@/context/LanguageContext";
+import { useInterstitialAd } from "@/hooks/useInterstitialAd";
 import { useLocation } from "@/hooks/useLocation";
 import { getAttractionById } from "@/services/attractionService";
 import { enrichWithDistance } from "@/services/distanceService";
@@ -46,6 +48,12 @@ export default function AttractionDetailScreen() {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize interstitial ad hook
+  const { trackView } = useInterstitialAd({
+    viewsBeforeAd: 5,
+    enabled: true,
+  });
 
   useEffect(() => {
     const loadAttraction = () => {
@@ -144,6 +152,13 @@ export default function AttractionDetailScreen() {
     loadAttraction();
   }, [id, location]);
 
+  // Track view when attraction is loaded
+  useEffect(() => {
+    if (attraction && !loading && !error) {
+      trackView();
+    }
+  }, [attraction, loading, error, trackView]);
+
   const backButtonScale = useSharedValue(1);
 
   const backButtonAnimatedStyle = useAnimatedStyle(() => ({
@@ -233,7 +248,7 @@ export default function AttractionDetailScreen() {
           {/* Hero Image */}
           <View style={styles.imageContainer}>
             <OptimizedImage
-              source={{ uri: attraction.imageUrl }}
+              source={attraction.imageUrl}
               style={styles.heroImage}
               fallbackIcon="image-outline"
               fallbackIconSize={80}
@@ -345,6 +360,9 @@ export default function AttractionDetailScreen() {
             </Pressable>
           </Animated.View>
         </ScrollView>
+
+        {/* Banner Ad */}
+        <BannerAdComponent />
       </View>
     </ErrorBoundary>
   );

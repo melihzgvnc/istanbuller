@@ -4,7 +4,7 @@ import { Image, ImageProps } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'source' | 'style'> {
-  source: { uri: string } | string;
+  source: { uri: string } | string | number; // number for require() module IDs
   style?: StyleProp<ImageStyle>;
   fallbackIcon?: keyof typeof Ionicons.glyphMap;
   fallbackIconSize?: number;
@@ -34,7 +34,13 @@ export default function OptimizedImage({
   const [isLoading, setIsLoading] = useState(true);
 
   // Normalize source to object format
-  const imageSource = typeof source === 'string' ? { uri: source } : source;
+  // If source is a number (require() module ID), use it directly
+  // If source is a string (URL), wrap it in { uri: ... }
+  const imageSource = typeof source === 'number'
+    ? source
+    : typeof source === 'string'
+      ? { uri: source }
+      : source;
 
   // Handle image load completion
   const handleLoad = () => {
@@ -59,22 +65,34 @@ export default function OptimizedImage({
     );
   }
 
-  return (
-    <View style={style}>
-      <Image
-        source={imageSource}
-        style={styles.image}
-        onLoad={handleLoad}
-        onError={handleError}
-        {...imageProps}
-      />
-      {showLoadingIndicator && isLoading && (
-        <View style={styles.loadingOverlay}>
-          <View style={styles.loadingIndicator} />
-        </View>
-      )}
-    </View>
-  );
+  try {
+    return (
+      <View style={style}>
+        <Image
+          source={imageSource}
+          style={styles.image}
+          onLoad={handleLoad}
+          onError={handleError}
+          {...imageProps}
+        />
+        {showLoadingIndicator && isLoading && (
+          <View style={styles.loadingOverlay}>
+            <View style={styles.loadingIndicator} />
+          </View>
+        )}
+      </View>
+    );
+  } catch (error) {
+    console.error(`[OptimizedImage] Error rendering Image:`, error);
+    return (
+      <View style={[styles.fallbackContainer, style]}>
+        <Ionicons name={fallbackIcon} size={fallbackIconSize} color="#9CA3AF" />
+        {fallbackText && (
+          <Text style={styles.fallbackText}>Error: {String(error)}</Text>
+        )}
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

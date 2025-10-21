@@ -60,7 +60,7 @@ export default function AttractionCard({
       accessibilityHint="Double tap to view attraction details"
     >
       <OptimizedImage
-        source={{ uri: attraction.imageUrl }}
+        source={attraction.imageUrl}
         style={styles.image}
         fallbackIcon="image-outline"
         fallbackIconSize={48}

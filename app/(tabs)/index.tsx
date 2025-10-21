@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, StatusBar, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { useLocation } from '@/hooks/useLocation';
-import { useAttractions } from '@/hooks/useAttractions';
-import { useLanguage } from '@/context/LanguageContext';
-import LocationPermission from '@/components/location/LocationPermission';
-import AttractionList from '@/components/attractions/AttractionList';
-import { DistrictPicker } from '@/components/district/DistrictPicker';
-import DistrictSelectionPrompt from '@/components/district/DistrictSelectionPrompt';
-import { ManualSelectionIndicator } from '@/components/district/ManualSelectionIndicator';
-import Theme from '@/constants/theme';
-import { IstanbulDistrict } from '@/types';
+import BannerAdComponent from "@/components/ads/BannerAd";
+import AttractionList from "@/components/attractions/AttractionList";
+import { DistrictPicker } from "@/components/district/DistrictPicker";
+import DistrictSelectionPrompt from "@/components/district/DistrictSelectionPrompt";
+import { ManualSelectionIndicator } from "@/components/district/ManualSelectionIndicator";
+import LocationPermission from "@/components/location/LocationPermission";
+import Theme from "@/constants/theme";
+import { useLanguage } from "@/context/LanguageContext";
+import { useAttractions } from "@/hooks/useAttractions";
+import { useLocation } from "@/hooks/useLocation";
+import { IstanbulDistrict } from "@/types";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, StatusBar, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -62,7 +63,7 @@ export default function HomeScreen() {
   // Handle permission denied
   const handlePermissionDenied = () => {
     // User denied permission, show appropriate message
-    console.log('Location permission denied');
+    console.log("Location permission denied");
   };
 
   // Handle refresh - refresh both location and attractions
@@ -133,16 +134,19 @@ export default function HomeScreen() {
     ) {
       // Show alert with options
       Alert.alert(
-        t('district.detected'),
-        t('district.detectedMessage').replace('{district}', lastAutoDetectedDistrict),
+        t("district.detected"),
+        t("district.detectedMessage").replace(
+          "{district}",
+          lastAutoDetectedDistrict
+        ),
         [
           {
-            text: t('district.keepManual'),
-            style: 'cancel',
+            text: t("district.keepManual"),
+            style: "cancel",
             onPress: handleKeepManual,
           },
           {
-            text: t('district.switchToAuto'),
+            text: t("district.switchToAuto"),
             onPress: handleSwitchToAuto,
           },
         ],
@@ -157,8 +161,11 @@ export default function HomeScreen() {
   // Show location permission screen if permission not granted
   if (!permissionGranted) {
     return (
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.background} />
+      <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={Theme.colors.background}
+        />
         <LocationPermission
           onPermissionGranted={handlePermissionGranted}
           onPermissionDenied={handlePermissionDenied}
@@ -173,19 +180,21 @@ export default function HomeScreen() {
 
   // Determine if we should show the district selection prompt
   // Show when: location is available, no district detected, and no manual selection active
-  const shouldShowPrompt = location && !district && !isManualSelection && !locationLoading;
+  const shouldShowPrompt =
+    location && !district && !isManualSelection && !locationLoading;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.background} />
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Theme.colors.background}
+      />
 
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>{t('home.nearbyAttractions')}</Text>
+        <Text style={styles.title}>{t("home.nearbyAttractions")}</Text>
         {district && !isManualSelection && (
-          <Text style={styles.subtitle}>
-            {district}
-          </Text>
+          <Text style={styles.subtitle}>{district}</Text>
         )}
         {isManualSelection && manuallySelectedDistrict && (
           <ManualSelectionIndicator
@@ -219,6 +228,9 @@ export default function HomeScreen() {
         onDismiss={handlePickerDismiss}
         currentDistrict={district}
       />
+
+      {/* Banner Ad */}
+      <BannerAdComponent />
     </SafeAreaView>
   );
 }
@@ -236,7 +248,7 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.background,
   },
   title: {
-    fontSize: Theme.typography.fontSize['3xl'],
+    fontSize: Theme.typography.fontSize["3xl"],
     fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs,

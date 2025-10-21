@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type Language = 'en' | 'tr';
@@ -19,6 +20,7 @@ interface LanguageProviderProps {
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
   const [language, setLanguageState] = useState<Language>('en');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadLanguage();
@@ -32,6 +34,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       }
     } catch (error) {
       console.error('Failed to load language:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -48,6 +52,15 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     const translations = language === 'tr' ? translationsTR : translationsEN;
     return translations[key] || key;
   };
+
+  // Show loading screen until language is loaded to prevent context errors
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

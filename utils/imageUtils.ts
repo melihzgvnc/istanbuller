@@ -26,6 +26,7 @@ export async function preloadImages(uris: string[]): Promise<void> {
 /**
  * Preload attraction images
  * Preloads images for a list of attractions
+ * Only preloads remote images (strings), not local bundled images (numbers)
  * 
  * @param attractions - Array of attractions
  * @param limit - Maximum number of images to preload (default: 5)
@@ -37,9 +38,12 @@ export async function preloadAttractionImages(
   const imageUris = attractions
     .slice(0, limit)
     .map((attraction) => attraction.imageUrl)
-    .filter((uri) => uri && uri.trim() !== '');
+    // Only preload remote images (strings), local images (numbers) are already bundled
+    .filter((uri): uri is string => typeof uri === 'string' && uri.trim() !== '');
 
-  await preloadImages(imageUris);
+  if (imageUris.length > 0) {
+    await preloadImages(imageUris);
+  }
 }
 
 /**

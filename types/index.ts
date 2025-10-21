@@ -43,7 +43,7 @@ export interface Attraction {
   name: string;
   description: string;
   summary: string;
-  imageUrl: string;
+  imageUrl: string | number; // string for URLs, number for require() module IDs
   coordinates: Coordinates;
   district: IstanbulDistrict;
   category: AttractionCategory;

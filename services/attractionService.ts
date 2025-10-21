@@ -3,6 +3,7 @@ import attractionsData from '../data/attractions.json';
 import districtsData from '../data/districts.json';
 import { DISTRICT_CONFIGS } from '../constants/Districts';
 import { DISTRICT_METADATA } from '../constants/DistrictMetadata';
+import { getAttractionImage } from '../constants/AttractionImages';
 
 /**
  * Validates that an attraction object has all required fields
@@ -28,19 +29,20 @@ function isValidAttraction(attraction: any): attraction is Attraction {
 }
 
 /**
- * Gets an appropriate image URL for a district
+ * Gets the appropriate image for a district from DISTRICT_METADATA
  * @param districtName - The name of the district
- * @returns Image URL for the district
+ * @returns Image module ID (number) for the district
  */
-function getDistrictImageUrl(districtName: IstanbulDistrict): string {
-  const imageMap: Record<string, string> = {
-    [IstanbulDistrict.GALATA]: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200', // Galata Tower
-    [IstanbulDistrict.NISANTASI]: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04', // Shopping street
-    [IstanbulDistrict.MODA]: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4', // Coastal view
-    [IstanbulDistrict.PRINCES_ISLANDS]: 'https://images.unsplash.com/photo-1603650637893-4c8d3f7ef97b', // Islands
-  };
+function getDistrictImage(districtName: IstanbulDistrict): number {
+  const districtMetadata = DISTRICT_METADATA[districtName];
 
-  return imageMap[districtName] || 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200';
+  if (districtMetadata && districtMetadata.image) {
+    return districtMetadata.image;
+  }
+
+  // Fallback to first district's image if not found
+  const firstDistrict = DISTRICT_METADATA[IstanbulDistrict.SULTANAHMET];
+  return firstDistrict?.image || require('@/assets/images/districts/sultanahmet.jpg');
 }
 
 /**
@@ -62,7 +64,7 @@ function createDistrictAttraction(districtName: IstanbulDistrict): Attraction | 
     name: districtMetadata.displayName,
     description: districtData.description,
     summary: districtMetadata.keyLandmarks.join(', '),
-    imageUrl: getDistrictImageUrl(districtName),
+    imageUrl: getDistrictImage(districtName),
     coordinates: districtConfig.center,
     district: districtName,
     category: AttractionCategory.HISTORICAL,
@@ -83,13 +85,19 @@ export function getAllAttractions(): Attraction[] {
       throw new Error('Invalid attractions data format');
     }
 
-    const validAttractions = attractionsData.attractions.filter((attraction) => {
-      const isValid = isValidAttraction(attraction);
-      if (!isValid) {
-        console.warn(`Invalid attraction data found, skipping:`, attraction);
-      }
-      return isValid;
-    });
+    const validAttractions = attractionsData.attractions
+      .filter((attraction) => {
+        const isValid = isValidAttraction(attraction);
+        if (!isValid) {
+          console.warn(`Invalid attraction data found, skipping:`, attraction);
+        }
+        return isValid;
+      })
+      .map((attraction) => ({
+        ...attraction,
+        // Convert image path string to require() module ID using static mapping
+        imageUrl: getAttractionImage(attraction.imageUrl),
+      }));
 
     if (validAttractions.length === 0) {
       throw new Error('No valid attractions found in data');
@@ -125,9 +133,12 @@ export function getAttractionsByDistrict(
   district: IstanbulDistrict
 ): Attraction[] {
   const allAttractions = getAllAttractions();
-  return allAttractions.filter(
-    (attraction) => attraction.district === district
-  );
+  const filtered = allAttractions.filter((attraction) => {
+    const matches = attraction.district === district;
+    return matches;
+  });
+
+  return filtered;
 }
 
 /**

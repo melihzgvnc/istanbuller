@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import BannerAdComponent from "@/components/ads/BannerAd";
+import DistrictCard from "@/components/district/DistrictCard";
+import DistrictDetailView from "@/components/district/DistrictDetailView";
+import { getAllDistricts } from "@/constants/DistrictMetadata";
+import Theme from "@/constants/theme";
+import { useLanguage } from "@/context/LanguageContext";
+import { IstanbulDistrict } from "@/types";
+import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   ScrollView,
-  SafeAreaView,
   StatusBar,
-} from 'react-native';
-import { IstanbulDistrict } from '@/types';
-import { getAllDistricts } from '@/constants/DistrictMetadata';
-import { useLanguage } from '@/context/LanguageContext';
-import DistrictCard from '@/components/district/DistrictCard';
-import DistrictDetailView from '@/components/district/DistrictDetailView';
-import Theme from '@/constants/theme';
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ExploreScreen() {
   const { t } = useLanguage();
-  const [selectedDistrict, setSelectedDistrict] = useState<IstanbulDistrict | null>(null);
+  const [selectedDistrict, setSelectedDistrict] =
+    useState<IstanbulDistrict | null>(null);
   const districts = getAllDistricts();
 
   const handleDistrictPress = (district: IstanbulDistrict) => {
@@ -39,11 +41,11 @@ export default function ExploreScreen() {
 
   // Show district list
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
-        <Text style={styles.title}>{t('explore.title')}</Text>
-        <Text style={styles.subtitle}>{t('explore.subtitle')}</Text>
+        <Text style={styles.title}>{t("explore.title")}</Text>
+        <Text style={styles.subtitle}>{t("explore.subtitle")}</Text>
       </View>
       <ScrollView
         style={styles.scrollView}
@@ -61,6 +63,9 @@ export default function ExploreScreen() {
           ))}
         </View>
       </ScrollView>
+
+      {/* Banner Ad */}
+      <BannerAdComponent />
     </SafeAreaView>
   );
 }
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.background,
   },
   title: {
-    fontSize: Theme.typography.fontSize['3xl'],
+    fontSize: Theme.typography.fontSize["3xl"],
     fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs,

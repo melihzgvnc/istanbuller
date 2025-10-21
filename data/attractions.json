@@ -1,11 +1,11 @@
-﻿{
+{
   "attractions": [
     {
       "id": "hagia-sophia",
       "name": "Hagia Sophia",
       "description": "A magnificent architectural marvel that has served as a church, mosque, and museum throughout its 1,500-year history. Built in 537 AD by Byzantine Emperor Justinian I, it features stunning Byzantine mosaics, a massive dome that seems to float on light, and intricate Islamic calligraphy. The building represents a unique blend of Christian and Islamic art and architecture, making it one of the most significant monuments in world history.",
       "summary": "Byzantine masterpiece, iconic dome, 1500+ years old",
-      "imageUrl": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b",
+      "imageUrl": "../assets/images/attractions/hagiasophia.jpg",
       "coordinates": {
         "latitude": 41.0086,
         "longitude": 28.9802
@@ -19,7 +19,7 @@
       "name": "Blue Mosque (Sultan Ahmed Mosque)",
       "description": "Built between 1609 and 1616 during the rule of Ahmed I, the Blue Mosque is famous for its stunning blue İznik tiles that adorn its interior walls. With six minarets and a cascading series of domes, it remains an active mosque and one of Istanbul's most iconic landmarks. The mosque's courtyard is as large as the mosque itself, and the interior features over 20,000 handmade ceramic tiles in various tulip designs.",
       "summary": "Six minarets, 20,000 blue tiles, active mosque",
-      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "imageUrl": "../assets/images/attractions/bluemosque.jpg",
       "coordinates": {
         "latitude": 41.0054,
         "longitude": 28.9768
@@ -33,7 +33,7 @@
       "name": "Topkapı Palace",
       "description": "The primary residence of Ottoman sultans for approximately 400 years (1465-1856). This sprawling palace complex covers 700,000 square meters and houses an impressive collection of Ottoman treasures, including the famous Topkapı Dagger and the Spoonmaker's Diamond. Visitors can explore the Imperial Treasury, the Sacred Relics section, and enjoy breathtaking views of the Bosphorus from the palace gardens.",
       "summary": "Ottoman palace, imperial treasury, Bosphorus views",
-      "imageUrl": "https://images.unsplash.com/photo-1609137144813-7d9921338f24",
+      "imageUrl": "../assets/images/attractions/topkapipalace.jpg",
       "coordinates": {
         "latitude": 41.0115,
         "longitude": 28.9833
@@ -47,7 +47,7 @@
       "name": "Grand Bazaar (Kapalıçarşı)",
       "description": "One of the largest and oldest covered markets in the world, with over 4,000 shops spread across 61 covered streets. Dating back to 1461, the Grand Bazaar attracts between 250,000 and 400,000 visitors daily. Here you can find everything from Turkish carpets and ceramics to jewelry, spices, and traditional textiles. The bazaar is a labyrinth of colors, scents, and sounds that offers an authentic Turkish shopping experience.",
       "summary": "4,000 shops, historic market, carpets & spices",
-      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "imageUrl": "../assets/images/attractions/grandbazaar.jpg",
       "coordinates": {
         "latitude": 41.0108,
         "longitude": 28.968
@@ -61,7 +61,7 @@
       "name": "Galata Tower",
       "description": "A medieval stone tower built in 1348 that dominates the skyline of the Galata district. Standing 67 meters tall, the tower offers panoramic 360-degree views of Istanbul, including the Golden Horn, Bosphorus, and the historic peninsula. Originally built as a watchtower, it now serves as a museum and observation deck. The surrounding Galata neighborhood is filled with charming cafes, art galleries, and boutique shops.",
       "summary": "Medieval tower, 360° views, 67m tall",
-      "imageUrl": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200",
+      "imageUrl": "../assets/images/attractions/galatatower.jpg",
       "coordinates": {
         "latitude": 41.0256,
         "longitude": 28.9741
@@ -75,7 +75,7 @@
       "name": "İstiklal Avenue",
       "description": "Istanbul's most famous pedestrian street, stretching 1.4 kilometers from Taksim Square to Galata Tower. This bustling avenue is lined with historic buildings, international shops, art galleries, cinemas, theaters, libraries, cafes, and restaurants. The nostalgic red tram runs along the street, adding to its charm. İstiklal is the heart of modern Istanbul's cultural and entertainment scene, attracting millions of visitors annually.",
       "summary": "Pedestrian street, shopping, historic tram",
-      "imageUrl": "https://images.unsplash.com/photo-1527838832700-5059252407fa",
+      "imageUrl": "../assets/images/attractions/istiklalavenue.jpg",
       "coordinates": {
         "latitude": 41.0369,
         "longitude": 28.9784
@@ -89,7 +89,7 @@
       "name": "Pera Museum",
       "description": "A private museum housed in a historic building in the Tepebaşı quarter, featuring a rich collection of Orientalist paintings, Anatolian weights and measures, and Kütahya tiles and ceramics. The museum is particularly famous for housing 'The Tortoise Trainer' by Osman Hamdi Bey, one of Turkey's most celebrated paintings. The museum also hosts temporary exhibitions of international contemporary art.",
       "summary": "Orientalist art, Turkish paintings, contemporary exhibits",
-      "imageUrl": "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3",
+      "imageUrl": "../assets/images/attractions/peramuseum.jpg",
       "coordinates": {
         "latitude": 41.0318,
         "longitude": 28.9746
@@ -103,7 +103,7 @@
       "name": "Dolmabahçe Palace",
       "description": "A stunning 19th-century palace that served as the main administrative center of the Ottoman Empire from 1856 to 1887 and 1909 to 1922. Built along the Bosphorus shore, it blends traditional Ottoman architecture with European Baroque, Rococo, and Neoclassical styles. The palace features 285 rooms, 46 halls, and houses the world's largest Bohemian crystal chandelier, a gift from Queen Victoria. Mustafa Kemal Atatürk, founder of modern Turkey, spent his final days here.",
       "summary": "Bosphorus palace, crystal chandelier, Ottoman grandeur",
-      "imageUrl": "https://images.unsplash.com/photo-1609137144813-7d9921338f24",
+      "imageUrl": "../assets/images/attractions/dolmabahcemuseum.jpg",
       "coordinates": {
         "latitude": 41.0391,
         "longitude": 29.0003
@@ -117,7 +117,7 @@
       "name": "Kadıköy Market",
       "description": "A vibrant local market on the Asian side of Istanbul, offering an authentic Turkish shopping experience away from tourist crowds. The market is famous for its fresh produce, fish, spices, cheeses, olives, and traditional Turkish delicacies. The surrounding streets are filled with trendy cafes, vintage shops, and street art. Kadıköy represents the modern, bohemian side of Istanbul and is a favorite among locals.",
       "summary": "Local market, fresh produce, Asian side charm",
-      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
+      "imageUrl": "../assets/images/attractions/kadikoymarket.jpg",
       "coordinates": {
         "latitude": 40.9904,
         "longitude": 29.0258
@@ -131,7 +131,7 @@
       "name": "Moda Coastal Park",
       "description": "A scenic waterfront promenade in the Moda neighborhood, offering stunning views of the Marmara Sea and the historic peninsula. This peaceful area is perfect for leisurely walks, picnics, and watching the sunset. The park features a historic pier, tea gardens, and is surrounded by charming Art Nouveau buildings. Moda is known for its relaxed atmosphere and is a favorite spot for locals to escape the city's hustle.",
       "summary": "Waterfront park, sunset views, local favorite",
-      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "imageUrl": "../assets/images/attractions/modacoast.jpg",
       "coordinates": {
         "latitude": 40.9833,
         "longitude": 29.0297
@@ -145,7 +145,7 @@
       "name": "Maiden's Tower (Kız Kulesi)",
       "description": "An iconic tower located on a small islet in the Bosphorus, off the coast of Üsküdar. Dating back to ancient times, the tower has served various purposes including a lighthouse, quarantine station, and customs checkpoint. Today it houses a restaurant and cafe, accessible by boat. The tower is surrounded by numerous legends, the most famous being the story of a princess locked away to prevent a prophecy. It offers spectacular views of both the European and Asian sides of Istanbul.",
       "summary": "Bosphorus islet, ancient tower, legendary views",
-      "imageUrl": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200",
+      "imageUrl": "../assets/images/attractions/maidenstower.jpg",
       "coordinates": {
         "latitude": 41.0211,
         "longitude": 29.0041
@@ -159,7 +159,7 @@
       "name": "Çamlıca Hill",
       "description": "The highest point in Istanbul, offering breathtaking panoramic views of the entire city, the Bosphorus, and the Marmara Sea. The hill features beautifully landscaped gardens, walking paths, cafes, and picnic areas. It's particularly popular during sunset and evening hours when the city lights create a magical atmosphere. The recently built Çamlıca Mosque, one of Turkey's largest mosques, adds to the hill's impressive skyline.",
       "summary": "Highest point, panoramic views, gardens & mosque",
-      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "imageUrl": "../assets/images/attractions/camlicahill.jpg",
       "coordinates": {
         "latitude": 41.0222,
         "longitude": 29.0661
@@ -173,7 +173,7 @@
       "name": "Basilica Cistern",
       "description": "An ancient underground water reservoir built in the 6th century during the reign of Byzantine Emperor Justinian I. This atmospheric cistern features 336 marble columns, each 9 meters high, arranged in 12 rows. The most famous features are the two Medusa head column bases, mysteriously placed upside down and sideways. The cistern's dim lighting, dripping water, and classical music create an otherworldly ambiance. It could store up to 80,000 cubic meters of water.",
       "summary": "Underground cistern, 336 columns, Medusa heads",
-      "imageUrl": "https://images.unsplash.com/photo-1609137144813-7d9921338f24",
+      "imageUrl": "../assets/images/attractions/basilicacistern.jpg",
       "coordinates": {
         "latitude": 41.0084,
         "longitude": 28.9778
@@ -187,7 +187,7 @@
       "name": "Spice Bazaar (Egyptian Bazaar)",
       "description": "A historic covered market built in 1664 as part of the New Mosque complex. The L-shaped bazaar is filled with vendors selling spices, Turkish delight, dried fruits, nuts, caviar, and traditional Turkish products. The air is filled with the aroma of exotic spices like saffron, sumac, and cumin. It's smaller and less overwhelming than the Grand Bazaar, making it perfect for purchasing authentic Turkish food products and souvenirs.",
       "summary": "Historic spice market, Turkish delight, aromatic",
-      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
+      "imageUrl": "../assets/images/attractions/spicebazaar.jpg",
       "coordinates": {
         "latitude": 41.0166,
         "longitude": 28.9703
@@ -201,7 +201,7 @@
       "name": "Galata Bridge",
       "description": "A famous bridge spanning the Golden Horn, connecting Eminönü and Karaköy. The bridge is lined with fishermen, restaurants beneath, and offers stunning views of the historic peninsula and Bosphorus. It's a great spot for photos and watching the sunset.",
       "summary": "Golden Horn bridge, sunset views, fishing",
-      "imageUrl": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92",
+      "imageUrl": "../assets/images/attractions/galatabridge.jpg",
       "coordinates": {
         "latitude": 41.019,
         "longitude": 28.9716
@@ -215,7 +215,7 @@
       "name": "New Mosque (Yeni Camii)",
       "description": "An Ottoman imperial mosque located in the Eminönü district. Completed in 1665, it's one of Istanbul's most prominent landmarks with its majestic domes and minarets. The mosque is part of a large complex that includes the Spice Bazaar.",
       "summary": "Ottoman mosque, domes & minarets, Spice Bazaar complex",
-      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "imageUrl": "../assets/images/attractions/newmosque.jpg",
       "coordinates": {
         "latitude": 41.0171,
         "longitude": 28.9714
@@ -229,7 +229,7 @@
       "name": "Rumeli Fortress (Rumeli Hisarı)",
       "description": "A 15th-century fortress built by Sultan Mehmed II before the conquest of Constantinople. Overlooking the Bosphorus, the fortress has towers, walls, and gardens offering stunning views. Today it's an open-air museum and occasional concert venue.",
       "summary": "15th-century fortress, Bosphorus views, museum",
-      "imageUrl": "https://images.unsplash.com/photo-1599983423774-7f6d2f8e798b",
+      "imageUrl": "../assets/images/attractions/rumelifortress.jpg",
       "coordinates": {
         "latitude": 41.0841,
         "longitude": 29.0571
@@ -243,7 +243,7 @@
       "name": "Bebek Coast",
       "description": "A beautiful Bosphorus neighborhood promenade, popular for scenic walks, cafes, and sea views. Bebek is one of the most elegant areas of Istanbul.",
       "summary": "Promenade, Bosphorus view, elegant cafes",
-      "imageUrl": "https://images.unsplash.com/photo-1599983423774-7f6d2f8e798b",
+      "imageUrl": "../assets/images/attractions/bebekcoast.jpg",
       "coordinates": {
         "latitude": 41.074,
         "longitude": 29.042
@@ -257,7 +257,7 @@
       "name": "Ortaköy Mosque (Büyük Mecidiye Camii)",
       "description": "A Baroque-style mosque built in the 19th century, located on the Bosphorus shore in Ortaköy. It's one of the most photographed landmarks of Istanbul, offering spectacular waterfront views.",
       "summary": "Baroque mosque, Bosphorus views, iconic landmark",
-      "imageUrl": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b",
+      "imageUrl": "../assets/images/attractions/ortakoymosque.jpg",
       "coordinates": {
         "latitude": 41.0557,
         "longitude": 29.0265
@@ -271,7 +271,7 @@
       "name": "Historic Tram on İstiklal Avenue",
       "description": "A nostalgic red tram that runs along İstiklal Avenue between Taksim Square and Tünel. It's a symbol of the district and offers a charming way to see the lively street.",
       "summary": "Historic tram, İstiklal Avenue, Taksim to Tünel",
-      "imageUrl": "https://images.unsplash.com/photo-1527838832700-5059252407fa",
+      "imageUrl": "../assets/images/attractions/historictram.jpg",
       "coordinates": {
         "latitude": 41.037,
         "longitude": 28.9856
@@ -285,7 +285,7 @@
       "name": "Taksim Square",
       "description": "The heart of modern Istanbul, Taksim Square is surrounded by hotels, shops, and restaurants. It's a major transportation hub and the site of the Republic Monument. The area hosts public events, celebrations, and cultural activities.",
       "summary": "Central square, Republic Monument, cultural hub",
-      "imageUrl": "https://images.unsplash.com/photo-1527838832700-5059252407fa",
+      "imageUrl": "../assets/images/attractions/taksimsquare.jpg",
       "coordinates": {
         "latitude": 41.037,
         "longitude": 28.9856
@@ -299,7 +299,7 @@
       "name": "Princes' Islands",
       "description": "An archipelago of nine islands in the Marmara Sea, famous for its beaches, historic mansions, pine forests, and tranquil atmosphere. The islands are car-free, with bicycles and electric vehicles used for transport. Büyükada is the largest and most visited.",
       "summary": "Car-free islands, beaches, historic mansions",
-      "imageUrl": "https://images.unsplash.com/photo-1603650637893-4c8d3f7ef97b",
+      "imageUrl": "../assets/images/attractions/princesislands.jpg",
       "coordinates": {
         "latitude": 40.874,
         "longitude": 29.09
@@ -313,7 +313,7 @@
       "name": "Fener Greek Orthodox Patriarchate",
       "description": "The spiritual center of the Eastern Orthodox Church, located in the Fener district. It includes the Church of St. George, which houses important relics and icons.",
       "summary": "Orthodox Patriarchate, historic church, relics",
-      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "imageUrl": "../assets/images/attractions/fenergreekorthodox.jpg",
       "coordinates": {
         "latitude": 41.031,
         "longitude": 28.9473
@@ -327,7 +327,7 @@
       "name": "Balat Colorful Streets",
       "description": "Famous for its colorful historic houses, steep cobbled streets, and vibrant cafes. Balat has become a popular spot for photography and cultural walks.",
       "summary": "Colorful houses, photography, cultural walks",
-      "imageUrl": "https://images.unsplash.com/photo-1583251292-c0f6b8b6e963",
+      "imageUrl": "../assets/images/attractions/balathouses.jpg",
       "coordinates": {
         "latitude": 41.0324,
         "longitude": 28.9481

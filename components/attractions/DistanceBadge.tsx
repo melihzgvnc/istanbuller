@@ -9,6 +9,11 @@ interface DistanceBadgeProps {
 }
 
 export default function DistanceBadge({ distance }: DistanceBadgeProps) {
+  // Safety check for undefined distance
+  if (!distance || typeof distance.walkingDistanceKm === 'undefined') {
+    return null;
+  }
+
   const formatDistance = (km: number): string => {
     if (km < 1) {
       return `${Math.round(km * 1000)}m`;
