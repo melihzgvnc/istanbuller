@@ -4,6 +4,7 @@
  */
 
 import { Platform } from "react-native";
+import { normalize, DESIGN_WIDTH } from "../utils/responsive";
 
 // Color Palette - Pastel, soothing colors inspired by Istanbul
 export const Colors = {
@@ -136,39 +137,39 @@ export const ModeColors = {
 
 // Typography
 export const Typography = {
-  // Font families
-  fontFamily: Platform.select({
-    ios: {
-      regular: "System",
-      medium: "System",
-      semibold: "System",
-      bold: "System",
+  // Font families - Poppins for headings, Inter for body
+  fontFamily: {
+    // Headings - Poppins (playful, modern)
+    heading: {
+      regular: "Poppins_400Regular",
+      medium: "Poppins_500Medium",
+      semibold: "Poppins_600SemiBold",
+      bold: "Poppins_700Bold",
     },
-    android: {
-      regular: "Roboto",
-      medium: "Roboto-Medium",
-      semibold: "Roboto-Medium",
-      bold: "Roboto-Bold",
+    // Body text - Inter (clean, readable)
+    body: {
+      regular: "Inter_400Regular",
+      medium: "Inter_500Medium",
+      semibold: "Inter_600SemiBold",
     },
-    default: {
-      regular: "System",
-      medium: "System",
-      semibold: "System",
-      bold: "System",
-    },
-  }),
+    // Convenience aliases
+    regular: "Inter_400Regular",
+    medium: "Inter_500Medium",
+    semibold: "Poppins_600SemiBold",
+    bold: "Poppins_700Bold",
+  },
 
-  // Font sizes
+  // Font sizes - Normalized for responsive scaling
   fontSize: {
-    xs: 12,
-    sm: 14,
-    base: 16,
-    lg: 18,
-    xl: 20,
-    "2xl": 24,
-    "3xl": 28,
-    "4xl": 32,
-    "5xl": 36,
+    xs: normalize(12),
+    sm: normalize(14),
+    base: normalize(16),
+    lg: normalize(18),
+    xl: normalize(20),
+    "2xl": normalize(24),
+    "3xl": normalize(28),
+    "4xl": normalize(32),
+    "5xl": normalize(36),
   },
 
   // Font weights
@@ -189,29 +190,29 @@ export const Typography = {
   },
 };
 
-// Spacing system (based on 4px grid)
+// Spacing system (based on 4px grid) - Normalized for responsive scaling
 export const Spacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  base: 16,
-  lg: 20,
-  xl: 24,
-  "2xl": 32,
-  "3xl": 40,
-  "4xl": 48,
-  "5xl": 64,
+  xs: normalize(4),
+  sm: normalize(8),
+  md: normalize(12),
+  base: normalize(16),
+  lg: normalize(20),
+  xl: normalize(24),
+  "2xl": normalize(32),
+  "3xl": normalize(40),
+  "4xl": normalize(48),
+  "5xl": normalize(64),
 };
 
-// Border radius - Increased for softer, more rounded appearance
+// Border radius - Increased for softer, more rounded appearance - Normalized for responsive scaling
 export const BorderRadius = {
   none: 0,
-  sm: 8,
-  base: 12,
-  md: 16,
-  lg: 20,
-  xl: 24,
-  "2xl": 28,
+  sm: normalize(8),
+  base: normalize(12),
+  md: normalize(16),
+  lg: normalize(20),
+  xl: normalize(24),
+  "2xl": normalize(28),
   full: 9999,
 };
 
@@ -294,10 +295,10 @@ export const Shadows = {
   }),
 };
 
-// Accessibility - Minimum touch target sizes
+// Accessibility - Minimum touch target sizes - Normalized for responsive scaling
 export const Accessibility = {
-  minTouchTarget: 44, // iOS HIG and Material Design recommendation
-  minTouchTargetAndroid: 48, // Material Design specific
+  minTouchTarget: normalize(44), // iOS HIG and Material Design recommendation
+  minTouchTargetAndroid: normalize(48), // Material Design specific
 
   // Contrast ratios (WCAG AA compliance)
   contrastRatios: {
@@ -328,6 +329,14 @@ export const Layout = {
   itemSpacing: Spacing.md,
 };
 
+// Breakpoints for responsive design
+export const Breakpoints = {
+  small: 320,
+  medium: 375,
+  large: 414,
+  tablet: 768,
+};
+
 // Export default theme object
 export const Theme = {
   colors: Colors,
@@ -338,6 +347,10 @@ export const Theme = {
   accessibility: Accessibility,
   animation: Animation,
   layout: Layout,
+  breakpoints: Breakpoints,
 };
+
+// Re-export normalize function for component use
+export { normalize, DESIGN_WIDTH };
 
 export default Theme;

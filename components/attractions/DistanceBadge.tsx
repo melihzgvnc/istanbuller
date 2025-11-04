@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
     minHeight: 28,
   },
   badgeText: {
+    fontFamily: Theme.typography.fontFamily.medium,
     fontSize: Theme.typography.fontSize.xs,
-    fontWeight: Theme.typography.fontWeight.medium,
     color: Theme.colors.text.primary,
   },
 });

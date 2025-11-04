@@ -29,6 +29,12 @@ export const IMAGE_TRANSITION_DURATION = {
 
 /**
  * Image content fit modes
+ * 
+ * Note: contentFit is expo-image's equivalent to React Native's resizeMode
+ * - cover: Scale image to fill container while maintaining aspect ratio (may crop)
+ * - contain: Scale image to fit within container while maintaining aspect ratio (may letterbox)
+ * - fill: Stretch image to fill container (may distort)
+ * - scale-down: Same as contain, but never scale up
  */
 export const IMAGE_CONTENT_FIT: Record<string, ImageContentFit> = {
   COVER: 'cover',

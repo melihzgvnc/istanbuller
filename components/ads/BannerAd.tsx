@@ -1,135 +1,109 @@
-import { getAdUnitId } from "@/constants/AdConfig";
+import { AD_CONFIG, hasPlaceholderIds } from "@/constants/AdConfig";
 import Theme from "@/constants/theme";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import {
+  BannerAd,
+  BannerAdSize,
+  TestIds,
+} from "react-native-google-mobile-ads";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { logger } from "@/utils/logger";
 
-// Conditionally import AdMob components
-let BannerAd: any = null;
-let BannerAdSize: any = null;
-try {
-  const admobModule = require("react-native-google-mobile-ads");
-  BannerAd = admobModule.BannerAd;
-  BannerAdSize = admobModule.BannerAdSize;
-} catch (error) {
-  // AdMob not available - will show fallback
-}
-
-interface BannerAdComponentProps {
-  /**
-   * Optional custom ad unit ID
-   * If not provided, uses the configured ad unit ID
-   */
-  adUnitId?: string;
-
-  /**
-   * Banner size - defaults to standard banner
-   */
-  size?: any;
-
-  /**
-   * Custom styles for the container
-   */
+interface BannerAdProps {
+  adUnitId: string;
+  size?: BannerAdSize;
   style?: any;
-
-  /**
-   * Whether to show a fallback when ad fails to load
-   */
-  showFallback?: boolean;
 }
 
-/**
- * Banner Ad Component
- *
- * A wrapper around Google Mobile Ads Banner with error handling
- * and fallback UI for when ads fail to load or AdMob is not available.
- */
 export default function BannerAdComponent({
   adUnitId,
-  size,
+  size = BannerAdSize.ADAPTIVE_BANNER,
   style,
-  showFallback = true,
-}: BannerAdComponentProps) {
-  const [adError, setAdError] = useState<string | null>(null);
-  const [adLoaded, setAdLoaded] = useState(false);
+}: BannerAdProps) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
-  // If AdMob is not available (Expo Go), show fallback or nothing
-  if (!BannerAd || !BannerAdSize) {
-    if (showFallback) {
-      return (
-        <View style={[styles.container, styles.fallbackContainer, style]}>
-          <Text style={styles.fallbackText}>Advertisement</Text>
-        </View>
+  // Use test ID in development, production ID otherwise
+  const finalAdUnitId = AD_CONFIG.testMode ? TestIds.BANNER : adUnitId;
+
+  // Debug logging and placeholder detection
+  React.useEffect(() => {
+    logger.log(
+      `Banner Ad - Test Mode: ${AD_CONFIG.testMode}, Using Ad Unit ID: ${finalAdUnitId}`
+    );
+
+    // Warn if iOS placeholder IDs are detected in development
+    if (__DEV__ && hasPlaceholderIds()) {
+      logger.warn(
+        "⚠️ iOS AdMob IDs are still placeholders! Ads will not work on iOS until you configure real AdMob IDs. See docs/ADMOB_CONFIGURATION.md for setup instructions."
       );
     }
-    return null;
-  }
-
-  // Use provided ad unit ID or get the configured one
-  const finalAdUnitId = adUnitId || getAdUnitId("banner");
-  const finalSize = size || BannerAdSize.ADAPTIVE_BANNER;
+  }, [finalAdUnitId]);
 
   const handleAdLoaded = () => {
-    setAdLoaded(true);
-    setAdError(null);
+    setIsLoading(false);
+    setHasError(false);
   };
 
   const handleAdFailedToLoad = (error: any) => {
-    console.warn("Banner ad failed to load:", error);
-    setAdError(error?.message || "Ad failed to load");
-    setAdLoaded(false);
+    logger.warn("Banner ad failed to load:", error);
+    setIsLoading(false);
+    setHasError(true);
+
+    // Log specific error details for debugging
+    if (error?.message?.includes("no-fill")) {
+      logger.log("No ads available (no-fill) - this is normal in development");
+    } else if (error?.message?.includes("network")) {
+      logger.log("Network error loading ad");
+    }
+
+    // Retry loading for non-no-fill errors (max 3 retries)
+    if (!error?.message?.includes("no-fill") && retryCount < 3) {
+      setTimeout(() => {
+        setRetryCount((prev) => prev + 1);
+        setIsLoading(true);
+        setHasError(false);
+      }, 5000); // Retry after 5 seconds
+    }
   };
 
-  const handleAdOpened = () => {
-    console.log("Banner ad opened");
-  };
-
-  const handleAdClosed = () => {
-    console.log("Banner ad closed");
-  };
-
-  // Show fallback UI if ad failed to load and fallback is enabled
-  if (adError && showFallback) {
-    return (
-      <View style={[styles.container, styles.fallbackContainer, style]}>
-        <Text style={styles.fallbackText}>Advertisement</Text>
-      </View>
-    );
+  // Don't render anything if there's an error
+  if (hasError) {
+    return null;
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <SafeAreaView style={[styles.container, style]} edges={["bottom"]}>
+      {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color={Theme.colors.primary[500]} />
+        </View>
+      )}
       <BannerAd
         unitId={finalAdUnitId}
-        size={finalSize}
+        size={size}
         requestOptions={{
           requestNonPersonalizedAdsOnly: false,
         }}
         onAdLoaded={handleAdLoaded}
         onAdFailedToLoad={handleAdFailedToLoad}
-        onAdOpened={handleAdOpened}
-        onAdClosed={handleAdClosed}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Theme.colors.background,
     borderTopWidth: 1,
     borderTopColor: Theme.colors.border.default,
   },
-  fallbackContainer: {
+  loadingContainer: {
     height: 50,
-    backgroundColor: Theme.colors.neutral[100],
-    borderTopWidth: 1,
-    borderTopColor: Theme.colors.border.light,
-  },
-  fallbackText: {
-    fontSize: Theme.typography.fontSize.sm,
-    color: Theme.colors.text.secondary,
-    fontWeight: Theme.typography.fontWeight.medium,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Theme.colors.surface,
   },
 });

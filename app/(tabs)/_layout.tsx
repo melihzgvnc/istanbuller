@@ -1,17 +1,20 @@
 import { Tabs } from "expo-router";
 import React, { useState } from "react";
-import { Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import { HapticTab } from "@/components/haptic-tab";
 import LanguageModal from "@/components/language/LanguageModal";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ModeColors } from "@/constants/theme";
 import { useLanguage } from "@/context/LanguageContext";
+import { useManualSelection } from "@/context/ManualSelectionContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import * as Haptics from "expo-haptics";
 
 export default function TabLayout() {
   const { t, language } = useLanguage();
+  const { triggerClear } = useManualSelection();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const scheme = useColorScheme() ?? "light";
 
@@ -23,7 +26,7 @@ export default function TabLayout() {
   const languageFlag = language === "tr" ? "🇹🇷" : "🇬🇧";
 
   return (
-    <>
+    <ErrorBoundary>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -34,13 +37,15 @@ export default function TabLayout() {
             backgroundColor: ModeColors[scheme].surface,
             borderTopColor: ModeColors[scheme].border,
             borderTopWidth: 1,
-            height: 64,
+            paddingBottom: 4,
+            paddingTop: 4,
           },
           tabBarItemStyle: {
-            marginVertical: 8,
+            marginVertical: 4,
           },
           tabBarLabelStyle: {
-            fontSize: 12,
+            fontSize: 11,
+            marginBottom: 2,
           },
         }}
       >
@@ -48,9 +53,15 @@ export default function TabLayout() {
           name="index"
           options={{
             title: t("tab.home"),
-            tabBarIcon: ({ color, focused }) => (
-              <IconSymbol size={28} name="house.fill" color={color} />
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={24} name="house.fill" color={color} />
             ),
+          }}
+          listeners={{
+            tabPress: () => {
+              // Clear manual district selection when home tab is pressed
+              triggerClear();
+            },
           }}
         />
         <Tabs.Screen
@@ -58,7 +69,7 @@ export default function TabLayout() {
           options={{
             title: t("tab.explore"),
             tabBarIcon: ({ color }) => (
-              <IconSymbol size={28} name="globe" color={color} />
+              <IconSymbol size={24} name="globe" color={color} />
             ),
           }}
         />
@@ -67,7 +78,7 @@ export default function TabLayout() {
           options={{
             title: t("tab.language"),
             tabBarIcon: () => (
-              <Text style={{ fontSize: 28 }}>{languageFlag}</Text>
+              <Text style={styles.languageFlag}>{languageFlag}</Text>
             ),
           }}
           listeners={{
@@ -83,6 +94,12 @@ export default function TabLayout() {
         visible={languageModalVisible}
         onClose={() => setLanguageModalVisible(false)}
       />
-    </>
+    </ErrorBoundary>
   );
 }
+
+const styles = StyleSheet.create({
+  languageFlag: {
+    fontSize: 24,
+  },
+});

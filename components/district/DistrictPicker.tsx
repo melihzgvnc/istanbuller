@@ -1,22 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
   Modal,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
   Pressable,
   Platform,
   Image,
 } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { IstanbulDistrict } from '@/types';
 import { getAllDistricts, DistrictInfo } from '@/constants/DistrictMetadata';
 import { useLanguage } from '@/context/LanguageContext';
-import { getTranslatedDistrictField } from '@/utils/translations';
+import { getTranslatedDistrictField, getTranslatedLandmark } from '@/utils/translations';
 import { Colors, Spacing, BorderRadius, Typography, Shadows, Accessibility } from '@/constants/theme';
 import { selectionHaptic, lightHaptic } from '@/utils/haptics';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useResponsive } from '@/hooks/useResponsive';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface DistrictPickerProps {
   visible: boolean;
@@ -32,13 +40,73 @@ export const DistrictPicker: React.FC<DistrictPickerProps> = ({
   currentDistrict,
 }) => {
   const { t } = useLanguage();
+  const { isTablet, isLandscape } = useResponsive();
   const [selectedDistrict, setSelectedDistrict] = useState<IstanbulDistrict | null>(
     currentDistrict || null
   );
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [shouldRenderList, setShouldRenderList] = useState(false);
 
-  const districts = getAllDistricts();
+  const districts = useMemo(() => getAllDistricts(), []);
 
-  const handleDistrictPress = (district: IstanbulDistrict) => {
+  // Calculate number of columns for tablet layout
+  const numColumns = isTablet && isLandscape ? 2 : 1;
+  const columnWrapperStyle = numColumns > 1 ? styles.columnWrapper : undefined;
+
+  // Animation values
+  const backdropOpacity = useSharedValue(0);
+  const modalTranslateY = useSharedValue(1000);
+
+  // Animate in when visible
+  useEffect(() => {
+    if (visible) {
+      setIsModalVisible(true);
+      setShouldRenderList(false);
+
+      // Start animation immediately
+      backdropOpacity.value = withSpring(1, {
+        damping: 20,
+        stiffness: 300,
+      });
+      modalTranslateY.value = withSpring(0, {
+        damping: 25,
+        stiffness: 400,
+        mass: 0.5,
+      });
+
+      // Render list after a tiny delay to let animation start smoothly
+      requestAnimationFrame(() => {
+        setShouldRenderList(true);
+      });
+    } else {
+      setShouldRenderList(false);
+
+      // Quick fade out
+      backdropOpacity.value = withSpring(0, {
+        damping: 20,
+        stiffness: 300,
+      });
+      modalTranslateY.value = withSpring(1000, {
+        damping: 20,
+        stiffness: 300,
+      });
+
+      // Hide modal after animation completes
+      setTimeout(() => {
+        setIsModalVisible(false);
+      }, 200);
+    }
+  }, [visible]);
+
+  const backdropStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+
+  const modalStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: modalTranslateY.value }],
+  }));
+
+  const handleDistrictPress = useCallback((district: IstanbulDistrict) => {
     selectionHaptic();
     setSelectedDistrict(district);
 
@@ -46,23 +114,47 @@ export const DistrictPicker: React.FC<DistrictPickerProps> = ({
     setTimeout(() => {
       onSelect(district);
     }, 150);
-  };
+  }, [onSelect]);
 
-  const handleBackdropPress = () => {
+  const handleBackdropPress = useCallback(() => {
     lightHaptic();
     onDismiss();
-  };
+  }, [onDismiss]);
 
-  const handleClosePress = () => {
+  const handleClosePress = useCallback(() => {
     lightHaptic();
     onDismiss();
-  };
+  }, [onDismiss]);
+
+  const renderDistrictItem = useCallback(({ item }: { item: DistrictInfo }) => (
+    <DistrictItem
+      districtInfo={item}
+      isSelected={selectedDistrict === item.name}
+      onPress={() => handleDistrictPress(item.name)}
+    />
+  ), [selectedDistrict, handleDistrictPress]);
+
+  const keyExtractor = useCallback((item: DistrictInfo) => item.name, []);
+
+  const getItemLayout = useCallback((_data: any, index: number) => {
+    const itemHeight = 120;
+    const adjustedIndex = numColumns > 1 ? Math.floor(index / numColumns) : index;
+    return {
+      length: itemHeight,
+      offset: itemHeight * adjustedIndex,
+      index,
+    };
+  }, [numColumns]);
+
+  if (!isModalVisible) {
+    return null;
+  }
 
   return (
     <Modal
-      visible={visible}
+      visible={isModalVisible}
       transparent
-      animationType="slide"
+      animationType="none"
       onRequestClose={onDismiss}
       statusBarTranslucent
       accessible={true}
@@ -71,19 +163,17 @@ export const DistrictPicker: React.FC<DistrictPickerProps> = ({
     >
       <View style={styles.container}>
         {/* Backdrop */}
-        <Pressable
-          style={styles.backdrop}
+        <AnimatedPressable
+          style={[styles.backdrop, backdropStyle]}
           onPress={handleBackdropPress}
           accessible={true}
           accessibilityLabel="Close district picker"
           accessibilityRole="button"
           accessibilityHint="Tap to dismiss the district picker"
-        >
-          <View />
-        </Pressable>
+        />
 
         {/* Modal Content */}
-        <View style={styles.modalContent}>
+        <Animated.View style={[styles.modalContent, modalStyle]}>
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.dragHandle} />
@@ -103,23 +193,29 @@ export const DistrictPicker: React.FC<DistrictPickerProps> = ({
           </View>
 
           {/* District List */}
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={true}
-            accessible={true}
-            accessibilityLabel="District list"
-          >
-            {districts.map((districtInfo) => (
-              <DistrictItem
-                key={districtInfo.name}
-                districtInfo={districtInfo}
-                isSelected={selectedDistrict === districtInfo.name}
-                onPress={() => handleDistrictPress(districtInfo.name)}
-              />
-            ))}
-          </ScrollView>
-        </View>
+          {shouldRenderList ? (
+            <FlatList
+              data={districts}
+              renderItem={renderDistrictItem}
+              keyExtractor={keyExtractor}
+              numColumns={numColumns}
+              key={numColumns}
+              columnWrapperStyle={columnWrapperStyle}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={true}
+              removeClippedSubviews={Platform.OS === 'android'}
+              maxToRenderPerBatch={isTablet ? 8 : 5}
+              updateCellsBatchingPeriod={100}
+              initialNumToRender={isTablet ? 8 : 5}
+              windowSize={5}
+              getItemLayout={getItemLayout}
+              accessible={true}
+              accessibilityLabel="District list"
+            />
+          ) : (
+            <View style={styles.scrollContent} />
+          )}
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -131,14 +227,20 @@ interface DistrictItemProps {
   onPress: () => void;
 }
 
-const DistrictItem: React.FC<DistrictItemProps> = ({
+const DistrictItem: React.FC<DistrictItemProps> = React.memo(({
   districtInfo,
   isSelected,
   onPress,
 }) => {
   const { language } = useLanguage();
-  const displayName = getTranslatedDistrictField(districtInfo.name, 'displayName', language, districtInfo.displayName);
-  const description = getTranslatedDistrictField(districtInfo.name, 'description', language, districtInfo.description);
+  const displayName = useMemo(() =>
+    getTranslatedDistrictField(districtInfo.name, 'displayName', language, districtInfo.displayName),
+    [districtInfo.name, language, districtInfo.displayName]
+  );
+  const description = useMemo(() =>
+    getTranslatedDistrictField(districtInfo.name, 'description', language, districtInfo.description),
+    [districtInfo.name, language, districtInfo.description]
+  );
 
   return (
     <TouchableOpacity
@@ -193,7 +295,7 @@ const DistrictItem: React.FC<DistrictItemProps> = ({
           <View style={styles.landmarksContainer}>
             {districtInfo.keyLandmarks.slice(0, 2).map((landmark, index) => (
               <Text key={index} style={styles.landmark}>
-                • {landmark}
+                • {getTranslatedLandmark(landmark, language)}
               </Text>
             ))}
           </View>
@@ -201,7 +303,7 @@ const DistrictItem: React.FC<DistrictItemProps> = ({
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -216,7 +318,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
-    height: '80%',
+    maxHeight: '80%',
     ...Platform.select({
       ios: Shadows.lg,
       android: { elevation: 8 },
@@ -243,8 +345,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   headerTitle: {
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize['2xl'],
-    fontWeight: Typography.fontWeight.bold,
     color: Colors.text.primary,
   },
   closeButton: {
@@ -255,18 +357,20 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
   },
   closeButtonText: {
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.xl,
     color: Colors.text.secondary,
-    fontWeight: Typography.fontWeight.medium,
-  },
-  scrollView: {
-    flex: 1,
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.base,
   },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    gap: Spacing.md,
+  },
   districtItem: {
+    flex: 1,
     backgroundColor: Colors.background,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
@@ -338,8 +442,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   districtName: {
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.semibold,
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
   },

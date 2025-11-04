@@ -1,25 +1,30 @@
 import AttractionList from "@/components/attractions/AttractionList";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { getDistrictMetadata } from "@/constants/DistrictMetadata";
 import { getDistrictConfig } from "@/constants/Districts";
+import { HERO_IMAGE_CONFIG } from "@/constants/ImageConfig";
 import Theme from "@/constants/theme";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAttractions } from "@/hooks/useAttractions";
+import { useLocation } from "@/hooks/useLocation";
+import { useResponsive } from "@/hooks/useResponsive";
 import { IstanbulDistrict } from "@/types";
 import { mediumHaptic } from "@/utils/haptics";
-import { getTranslatedDistrictField } from "@/utils/translations";
-import { Ionicons } from "@expo/vector-icons";
+import { getTranslatedDistrictField, getTranslatedLandmark } from "@/utils/translations";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  ImageBackground,
   Pressable,
   StatusBar,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { logger } from "@/utils/logger";
+import { createSafeAreaPadding } from "@/utils/styleUtils";
 
 interface DistrictDetailViewProps {
   district: IstanbulDistrict;
@@ -32,6 +37,11 @@ export default function DistrictDetailView({
 }: DistrictDetailViewProps) {
   const router = useRouter();
   const { t, language } = useLanguage();
+  const insets = useSafeAreaInsets();
+  const { isTablet, isLandscape } = useResponsive();
+
+  // Get user's location for distance calculations
+  const { location } = useLocation();
 
   // Add error handling for district metadata
   let districtInfo;
@@ -40,7 +50,7 @@ export default function DistrictDetailView({
     districtInfo = getDistrictMetadata(district);
     districtConfig = getDistrictConfig(district);
   } catch (err) {
-    console.error(`Error loading district metadata for ${district}:`, err);
+    logger.error(`Error loading district metadata for ${district}:`, err);
     return (
       <View style={styles.container}>
         <Text>Error loading district information</Text>
@@ -51,17 +61,13 @@ export default function DistrictDetailView({
     );
   }
 
-  // Use district center as reference point for distance calculations
+  // Use user's actual location for distance calculations
   const { attractions, loading, error, refresh } = useAttractions({
     district,
-    userLocation: null,
-    referencePoint: districtConfig?.center,
+    userLocation: location,
+    referencePoint: undefined,
     isManualSelection: true,
   });
-  const handleBack = () => {
-    mediumHaptic();
-    onBack();
-  };
 
   const handleAttractionPress = (id: string) => {
     mediumHaptic();
@@ -77,33 +83,36 @@ export default function DistrictDetailView({
       <StatusBar barStyle="light-content" />
 
       {/* Hero Image Header */}
-      <ImageBackground
-        source={
-          districtInfo.image ||
-          require("@/assets/images/districts/sultanahmet.jpg")
-        }
-        style={styles.heroImage}
-        resizeMode="cover"
-      >
+      <View style={[
+        styles.heroImage,
+        isLandscape && styles.heroImageLandscape,
+        isTablet && styles.heroImageTablet,
+      ]}>
+        <OptimizedImage
+          source={
+            districtInfo.image ||
+            require("@/assets/images/districts/sultanahmet.jpg")
+          }
+          style={styles.heroImageBackground}
+          fallbackIcon="map-outline"
+          {...HERO_IMAGE_CONFIG}
+        />
         <LinearGradient
           colors={["rgba(0,0,0,0.3)", "rgba(0,0,0,0.6)"]}
-          style={styles.heroGradient}
+          style={[
+            styles.heroGradient,
+            { paddingTop: insets.top + Theme.spacing.lg },
+          ]}
         >
-          {/* Back Button - positioned absolutely at top */}
-          <Pressable
-            style={styles.backButton}
-            onPress={handleBack}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            accessibilityHint="Returns to district list"
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </Pressable>
-
           {/* Content at bottom */}
-          <View style={styles.heroContent}>
-            <Text style={styles.title}>
+          <View style={[
+            styles.heroContent,
+            isLandscape && styles.heroContentLandscape,
+          ]}>
+            <Text style={[
+              styles.title,
+              isTablet && styles.titleTablet,
+            ]}>
               {getTranslatedDistrictField(
                 district,
                 "displayName",
@@ -111,7 +120,10 @@ export default function DistrictDetailView({
                 districtInfo.displayName
               )}
             </Text>
-            <Text style={styles.subtitle}>
+            <Text style={[
+              styles.subtitle,
+              isTablet && styles.subtitleTablet,
+            ]}>
               {getTranslatedDistrictField(
                 district,
                 "description",
@@ -133,7 +145,7 @@ export default function DistrictDetailView({
                         color="#FFFFFF"
                       />
                       <Text style={styles.landmarksOverlayText}>
-                        {landmark}
+                        {getTranslatedLandmark(landmark, language)}
                       </Text>
                     </View>
                   ))}
@@ -142,7 +154,7 @@ export default function DistrictDetailView({
             )}
           </View>
         </LinearGradient>
-      </ImageBackground>
+      </View>
 
       {/* Landmarks moved into hero overlay */}
 
@@ -151,7 +163,7 @@ export default function DistrictDetailView({
           {t("district.attractions")} ({attractions.length})
         </Text>
         <Text style={styles.attractionsSubtitle}>
-          {t("district.distancesFromCenter")}
+          {t("district.distancesFromYourLocation")}
         </Text>
       </View>
 
@@ -173,45 +185,62 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     width: "100%",
-    height: 260,
+    aspectRatio: 16 / 9,
+    position: "relative",
+    overflow: "hidden",
+  },
+  heroImageLandscape: {
+    aspectRatio: 21 / 9,
+  },
+  heroImageTablet: {
+    aspectRatio: 18 / 9,
+  },
+  heroImageBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
   },
   heroGradient: {
     flex: 1,
     justifyContent: "flex-end",
     paddingBottom: Theme.spacing.base,
-    paddingTop: Theme.spacing.lg,
-  },
-  backButton: {
-    position: "absolute",
-    top: 56,
-    left: Theme.spacing.base,
-    width: Theme.accessibility.minTouchTarget,
-    height: Theme.accessibility.minTouchTarget,
-    borderRadius: Theme.borderRadius.full,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    justifyContent: "center",
-    alignItems: "center",
   },
   heroContent: {
     paddingHorizontal: Theme.spacing.lg,
     paddingBottom: Theme.spacing.sm,
   },
+  heroContentLandscape: {
+    paddingHorizontal: Theme.spacing["2xl"],
+    maxWidth: "70%",
+  },
   title: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize["3xl"],
-    fontWeight: Theme.typography.fontWeight.bold,
     color: "#FFFFFF",
     marginBottom: Theme.spacing.xs,
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
+  titleTablet: {
+    fontSize: Theme.typography.fontSize["4xl"],
+  },
   subtitle: {
+    fontFamily: Theme.typography.fontFamily.regular,
     fontSize: Theme.typography.fontSize.base,
     color: "#FFFFFF",
     lineHeight: 22,
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
+  },
+  subtitleTablet: {
+    fontSize: Theme.typography.fontSize.lg,
+    lineHeight: 26,
   },
   landmarksOverlay: {
     marginTop: Theme.spacing.sm,
@@ -292,12 +321,13 @@ const styles = StyleSheet.create({
     marginTop: Theme.spacing["2xl"],
   },
   attractionsTitle: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize.lg,
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs,
   },
   attractionsSubtitle: {
+    fontFamily: Theme.typography.fontFamily.regular,
     fontSize: Theme.typography.fontSize.xs,
     color: Theme.colors.text.tertiary,
   },

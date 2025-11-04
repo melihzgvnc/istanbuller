@@ -4,6 +4,7 @@ import { getAttractionsByDistrict } from '@/services/attractionService';
 import { enrichWithDistance, hasSignificantLocationChange } from '@/services/distanceService';
 import { showErrorToast } from '@/utils/toast';
 import { preloadAttractionImages } from '@/utils/imageUtils';
+import { logger } from '@/utils/logger';
 
 export interface UseAttractionsOptions {
   district: IstanbulDistrict | null;
@@ -33,7 +34,7 @@ export function useAttractions({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState<number>(0);
-  
+
   // Track last location used for distance calculations
   const lastCalculatedLocation = useRef<Coordinates | null>(null);
 
@@ -91,7 +92,8 @@ export function useAttractions({
         }
 
         // Check if location has changed significantly since last calculation
-        const shouldRecalculate = 
+        // Note: We always recalculate when district changes (handled by useEffect dependency)
+        const shouldRecalculate =
           !lastCalculatedLocation.current ||
           hasSignificantLocationChange(
             lastCalculatedLocation.current,
@@ -99,8 +101,9 @@ export function useAttractions({
             0.1 // 100 meters threshold
           );
 
-        if (!shouldRecalculate && attractions.length > 0) {
-          // Location change is insignificant, keep existing attractions
+        // Only skip if location hasn't changed AND we already have attractions for this district
+        if (!shouldRecalculate && attractions.length > 0 && attractions[0]?.district === district) {
+          // Location change is insignificant and district is the same, keep existing attractions
           setLoading(false);
           return;
         }
@@ -115,7 +118,7 @@ export function useAttractions({
         if (!enrichedAttractions || enrichedAttractions.length === 0) {
           if (districtAttractions.length > 0) {
             // Distance calculation failed but we have attractions
-            console.warn('Distance calculation failed, showing attractions without distance');
+            logger.warn('Distance calculation failed, showing attractions without distance');
             const attractionsWithoutDistance = districtAttractions.map((attraction) => ({
               ...attraction,
               distance: {
@@ -130,17 +133,17 @@ export function useAttractions({
           }
         } else {
           setAttractions(enrichedAttractions);
-          
+
           // Preload images for the first few attractions for better performance
           preloadAttractionImages(enrichedAttractions, 5).catch((err) => {
-            console.warn('Failed to preload attraction images:', err);
+            logger.warn('Failed to preload attraction images:', err);
           });
         }
-        
+
         lastCalculatedLocation.current = calculationPoint;
       } catch (err) {
-        const errorMessage = err instanceof Error 
-          ? err.message 
+        const errorMessage = err instanceof Error
+          ? err.message
           : 'Failed to load attractions';
         setError(errorMessage);
         showErrorToast(errorMessage);

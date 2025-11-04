@@ -2,16 +2,12 @@ import OptimizedImage from "@/components/ui/OptimizedImage";
 import { ATTRACTION_CARD_IMAGE_CONFIG } from "@/constants/ImageConfig";
 import Theme from "@/constants/theme";
 import { useLanguage } from "@/context/LanguageContext";
+import { useResponsive } from "@/hooks/useResponsive";
 import { AttractionWithDistance } from "@/types";
 import { mediumHaptic } from "@/utils/haptics";
 import { getTranslatedAttractionField } from "@/utils/translations";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 import DistanceBadge from "./DistanceBadge";
 
 interface AttractionCardProps {
@@ -19,29 +15,12 @@ interface AttractionCardProps {
   onPress: (id: string) => void;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-export default function AttractionCard({
+function AttractionCard({
   attraction,
   onPress,
 }: AttractionCardProps) {
   const { language } = useLanguage();
-  const scale = useSharedValue(1);
-  const scheme = (
-    typeof window === "undefined" ? "light" : (window as any)
-  ) as any;
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.97, { damping: 15, stiffness: 300 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-  };
+  const { isTablet } = useResponsive();
 
   const handlePress = () => {
     mediumHaptic();
@@ -49,11 +28,13 @@ export default function AttractionCard({
   };
 
   return (
-    <AnimatedPressable
-      style={[styles.card, animatedStyle]}
+    <Pressable
+      style={({ pressed }) => [
+        styles.card,
+        isTablet && styles.cardTablet,
+        pressed && styles.cardPressed,
+      ]}
       onPress={handlePress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
       accessible={true}
       accessibilityRole="button"
       accessibilityLabel={`${attraction.name}, ${attraction.category}`}
@@ -92,9 +73,11 @@ export default function AttractionCard({
 
         <DistanceBadge distance={attraction.distance} />
       </View>
-    </AnimatedPressable>
+    </Pressable>
   );
 }
+
+export default React.memo(AttractionCard);
 
 const styles = StyleSheet.create({
   card: {
@@ -103,31 +86,41 @@ const styles = StyleSheet.create({
     marginHorizontal: Theme.spacing.base,
     marginVertical: Theme.spacing.sm,
     overflow: "hidden",
+    minHeight: Theme.accessibility.minTouchTarget,
     ...Theme.shadows.base,
+  },
+  cardTablet: {
+    marginHorizontal: Theme.spacing.lg,
+    marginVertical: Theme.spacing.md,
+  },
+  cardPressed: {
+    opacity: 0.7,
   },
   image: {
     width: "100%",
-    height: 200,
+    aspectRatio: 16 / 9,
   },
   content: {
     padding: Theme.spacing.base,
     gap: Theme.spacing.md,
+    minHeight: Theme.accessibility.minTouchTarget,
   },
   header: {
     gap: Theme.spacing.xs,
   },
   name: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize.xl,
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     lineHeight: 26,
   },
   category: {
+    fontFamily: Theme.typography.fontFamily.medium,
     fontSize: Theme.typography.fontSize.sm,
-    fontWeight: Theme.typography.fontWeight.medium,
     color: Theme.colors.text.secondary,
   },
   summary: {
+    fontFamily: Theme.typography.fontFamily.regular,
     fontSize: Theme.typography.fontSize.sm,
     color: Theme.colors.text.secondary,
     lineHeight: 20,

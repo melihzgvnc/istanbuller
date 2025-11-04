@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, StyleProp, ImageStyle } from 'react-native';
-import { Image, ImageProps } from 'expo-image';
+import { Image, ImageProps, ImageContentFit } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+import { logger } from '@/utils/logger';
+import { normalize } from '@/utils/responsive';
 
-interface OptimizedImageProps extends Omit<ImageProps, 'source' | 'style'> {
+interface OptimizedImageProps extends Omit<ImageProps, 'source' | 'style' | 'contentFit'> {
   source: { uri: string } | string | number; // number for require() module IDs
   style?: StyleProp<ImageStyle>;
   fallbackIcon?: keyof typeof Ionicons.glyphMap;
   fallbackIconSize?: number;
   fallbackText?: string;
   showLoadingIndicator?: boolean;
+  contentFit?: ImageContentFit; // Explicitly define contentFit (replaces resizeMode)
+  aspectRatio?: number; // Support aspectRatio for responsive scaling
 }
 
 /**
@@ -20,18 +24,21 @@ interface OptimizedImageProps extends Omit<ImageProps, 'source' | 'style'> {
  * - Error handling with fallback UI
  * - Optimized caching strategy
  * - Loading states
+ * - Responsive scaling with aspectRatio support
+ * - Normalized dimensions for consistent rendering across devices
  */
-export default function OptimizedImage({
+function OptimizedImage({
   source,
   style,
   fallbackIcon = 'image-outline',
   fallbackIconSize = 48,
   fallbackText = 'Image unavailable',
   showLoadingIndicator = false,
+  contentFit = 'cover', // Default to 'cover' for proper image scaling
+  aspectRatio,
   ...imageProps
 }: OptimizedImageProps) {
   const [imageError, setImageError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Normalize source to object format
   // If source is a number (require() module ID), use it directly
@@ -42,22 +49,38 @@ export default function OptimizedImage({
       ? { uri: source }
       : source;
 
-  // Handle image load completion
-  const handleLoad = () => {
-    setIsLoading(false);
-  };
-
   // Handle image load error
-  const handleError = () => {
+  const handleError = useCallback(() => {
     setImageError(true);
-    setIsLoading(false);
-  };
+  }, []);
+
+  // Process style to ensure responsive dimensions
+  // Extract and normalize any fixed dimensions
+  const processedStyle = React.useMemo(() => {
+    const styleArray = StyleSheet.flatten(style);
+    const processedStyles: ImageStyle = { ...styleArray };
+
+    // If aspectRatio is provided, use it and ensure width is percentage-based
+    if (aspectRatio) {
+      processedStyles.aspectRatio = aspectRatio;
+      // Remove fixed height if aspectRatio is specified
+      delete processedStyles.height;
+    }
+
+    // Ensure width is percentage-based or undefined (defaults to 100%)
+    if (typeof processedStyles.width === 'number' && processedStyles.width > 1) {
+      // If width is a fixed pixel value, convert to percentage or remove it
+      logger.warn('[OptimizedImage] Fixed width detected. Consider using percentage-based width or aspectRatio.');
+    }
+
+    return processedStyles;
+  }, [style, aspectRatio]);
 
   // If image failed to load, show fallback UI
   if (imageError) {
     return (
-      <View style={[styles.fallbackContainer, style]}>
-        <Ionicons name={fallbackIcon} size={fallbackIconSize} color="#9CA3AF" />
+      <View style={[styles.fallbackContainer, processedStyle]}>
+        <Ionicons name={fallbackIcon} size={normalize(fallbackIconSize)} color="#9CA3AF" />
         {fallbackText && (
           <Text style={styles.fallbackText}>{fallbackText}</Text>
         )}
@@ -67,26 +90,19 @@ export default function OptimizedImage({
 
   try {
     return (
-      <View style={style}>
-        <Image
-          source={imageSource}
-          style={styles.image}
-          onLoad={handleLoad}
-          onError={handleError}
-          {...imageProps}
-        />
-        {showLoadingIndicator && isLoading && (
-          <View style={styles.loadingOverlay}>
-            <View style={styles.loadingIndicator} />
-          </View>
-        )}
-      </View>
+      <Image
+        source={imageSource}
+        style={[styles.image, processedStyle]}
+        contentFit={contentFit}
+        onError={handleError}
+        {...imageProps}
+      />
     );
   } catch (error) {
-    console.error(`[OptimizedImage] Error rendering Image:`, error);
+    logger.error(`[OptimizedImage] Error rendering Image:`, error);
     return (
-      <View style={[styles.fallbackContainer, style]}>
-        <Ionicons name={fallbackIcon} size={fallbackIconSize} color="#9CA3AF" />
+      <View style={[styles.fallbackContainer, processedStyle]}>
+        <Ionicons name={fallbackIcon} size={normalize(fallbackIconSize)} color="#9CA3AF" />
         {fallbackText && (
           <Text style={styles.fallbackText}>Error: {String(error)}</Text>
         )}
@@ -95,36 +111,23 @@ export default function OptimizedImage({
   }
 }
 
+export default React.memo(OptimizedImage);
+
 const styles = StyleSheet.create({
   image: {
-    width: '100%',
-    height: '100%',
+    width: '100%', // Always use percentage-based width
+    // height removed - use aspectRatio instead for responsive scaling
   },
   fallbackContainer: {
-    width: '100%',
-    height: '100%',
+    width: '100%', // Always use percentage-based width
     backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    gap: normalize(8),
   },
   fallbackText: {
-    fontSize: 14,
+    fontFamily: 'Inter_500Medium',
+    fontSize: normalize(14),
     color: '#6B7280',
-    fontWeight: '500',
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(243, 244, 246, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingIndicator: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 3,
-    borderColor: '#E5E7EB',
-    borderTopColor: '#3B82F6',
   },
 });

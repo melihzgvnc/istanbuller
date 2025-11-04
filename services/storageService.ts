@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IstanbulDistrict } from '@/types';
 import { STORAGE_KEYS } from '@/constants/StorageKeys';
+import { logger } from '@/utils/logger';
 
 /**
  * Save manually selected district to AsyncStorage
@@ -19,8 +20,10 @@ export async function saveManualDistrict(
       );
     }
   } catch (error) {
-    console.error('Error saving manual district selection:', error);
-    throw new Error('Failed to save district selection');
+    logger.error('Error saving manual district selection:', error);
+    const err = new Error('Failed to save district selection');
+    (err as any).translationKey = 'storage.save.failed';
+    throw err;
   }
 }
 
@@ -33,15 +36,15 @@ export async function loadManualDistrict(): Promise<IstanbulDistrict | null> {
     const district = await AsyncStorage.getItem(
       STORAGE_KEYS.MANUAL_DISTRICT_SELECTION
     );
-    
+
     // Validate that the loaded value is a valid district
     if (district && Object.values(IstanbulDistrict).includes(district as IstanbulDistrict)) {
       return district as IstanbulDistrict;
     }
-    
+
     return null;
   } catch (error) {
-    console.error('Error loading manual district selection:', error);
+    logger.error('Error loading manual district selection:', error);
     return null;
   }
 }
@@ -53,8 +56,10 @@ export async function clearManualDistrict(): Promise<void> {
   try {
     await AsyncStorage.removeItem(STORAGE_KEYS.MANUAL_DISTRICT_SELECTION);
   } catch (error) {
-    console.error('Error clearing manual district selection:', error);
-    throw new Error('Failed to clear district selection');
+    logger.error('Error clearing manual district selection:', error);
+    const err = new Error('Failed to clear district selection');
+    (err as any).translationKey = 'storage.clear.failed';
+    throw err;
   }
 }
 
@@ -75,7 +80,7 @@ export async function saveLastAutoDetectedDistrict(
       );
     }
   } catch (error) {
-    console.error('Error saving last auto-detected district:', error);
+    logger.error('Error saving last auto-detected district:', error);
     // Don't throw - this is not critical
   }
 }
@@ -89,15 +94,15 @@ export async function loadLastAutoDetectedDistrict(): Promise<IstanbulDistrict |
     const district = await AsyncStorage.getItem(
       STORAGE_KEYS.LAST_AUTO_DETECTED_DISTRICT
     );
-    
+
     // Validate that the loaded value is a valid district
     if (district && Object.values(IstanbulDistrict).includes(district as IstanbulDistrict)) {
       return district as IstanbulDistrict;
     }
-    
+
     return null;
   } catch (error) {
-    console.error('Error loading last auto-detected district:', error);
+    logger.error('Error loading last auto-detected district:', error);
     return null;
   }
 }

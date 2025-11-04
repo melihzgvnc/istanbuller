@@ -3,9 +3,11 @@ import { AppState, AppStateStatus } from 'react-native';
 import { Coordinates, IstanbulDistrict } from '@/types';
 import districtsData from '@/data/districts.json';
 import { calculateDistance, hasSignificantLocationChange } from './distanceService';
+import { logger } from '@/utils/logger';
+import { LocationConfig } from '@/constants/AppConfig';
 
 export class LocationError extends Error {
-  constructor(message: string, public code?: string) {
+  constructor(message: string, public code?: string, public translationKey?: string) {
     super(message);
     this.name = 'LocationError';
   }
@@ -20,22 +22,23 @@ export async function requestPermissions(): Promise<boolean> {
     const { status } = await Location.requestForegroundPermissionsAsync();
     return status === 'granted';
   } catch (error) {
-    console.error('Error requesting location permissions:', error);
+    logger.error('Error requesting location permissions:', error);
     throw new LocationError(
       'Failed to request location permissions',
-      'PERMISSION_REQUEST_FAILED'
+      'PERMISSION_REQUEST_FAILED',
+      'location.permission.request.failed'
     );
   }
 }
 
 /**
  * Get the current location of the user with timeout handling
- * @param timeoutMs - Timeout in milliseconds (default: 15000ms / 15 seconds)
+ * @param timeoutMs - Timeout in milliseconds (default from AppConfig)
  * @param options - Optional configuration
  * @returns Promise<Coordinates | null> - user's current coordinates or null if unavailable
  */
 export async function getCurrentLocation(
-  timeoutMs: number = 15000,
+  timeoutMs: number = LocationConfig.GPS_TIMEOUT_MS,
   options?: { silent?: boolean }
 ): Promise<Coordinates | null> {
   try {
@@ -44,7 +47,8 @@ export async function getCurrentLocation(
     if (!isEnabled) {
       throw new LocationError(
         'Location services are disabled. Please enable them in your device settings.',
-        'LOCATION_SERVICES_DISABLED'
+        'LOCATION_SERVICES_DISABLED',
+        'location.services.disabled'
       );
     }
 
@@ -53,14 +57,15 @@ export async function getCurrentLocation(
     if (status !== 'granted') {
       throw new LocationError(
         'Location permission not granted',
-        'PERMISSION_DENIED'
+        'PERMISSION_DENIED',
+        'location.permission.denied'
       );
     }
 
     // Try to get last known location first for faster response
     const lastKnown = await Location.getLastKnownPositionAsync({
-      maxAge: 300000, // 5 minutes
-      requiredAccuracy: 1000, // 1km accuracy is acceptable
+      maxAge: LocationConfig.LAST_KNOWN_MAX_AGE_MS,
+      requiredAccuracy: LocationConfig.LAST_KNOWN_ACCURACY_METERS,
     });
 
     // If we have a recent location, use it immediately
@@ -81,7 +86,8 @@ export async function getCurrentLocation(
       setTimeout(() => {
         reject(new LocationError(
           'GPS timeout. Please ensure you have a clear view of the sky and try again.',
-          'GPS_TIMEOUT'
+          'GPS_TIMEOUT',
+          'location.gps.timeout'
         ));
       }, timeoutMs);
     });
@@ -97,10 +103,11 @@ export async function getCurrentLocation(
     if (error instanceof LocationError) {
       throw error;
     }
-    console.error('Error getting current location:', error);
+    logger.error('Error getting current location:', error);
     throw new LocationError(
       'Unable to determine your location. Please try again.',
-      'LOCATION_UNAVAILABLE'
+      'LOCATION_UNAVAILABLE',
+      'location.unavailable'
     );
   }
 }
@@ -141,7 +148,7 @@ export function getCurrentDistrict(
 
     return null;
   } catch (error) {
-    console.error('Error determining district:', error);
+    logger.error('Error determining district:', error);
     return null;
   }
 }
@@ -161,7 +168,7 @@ export function watchLocation(
   }
 ): () => void {
   const {
-    distanceThreshold = 100, // Default: 100 meters
+    distanceThreshold = LocationConfig.DISTANCE_THRESHOLD_METERS,
     pauseOnBackground = true,
   } = options || {};
 
@@ -177,7 +184,8 @@ export function watchLocation(
       if (status !== 'granted') {
         throw new LocationError(
           'Location permission not granted',
-          'PERMISSION_DENIED'
+          'PERMISSION_DENIED',
+          'location.permission.denied'
         );
       }
 
@@ -185,7 +193,7 @@ export function watchLocation(
       subscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Balanced,
-          timeInterval: 10000, // Update every 10 seconds
+          timeInterval: LocationConfig.LOCATION_UPDATE_INTERVAL_MS,
           distanceInterval: distanceThreshold, // Or when moved specified distance
         },
         (location) => {
@@ -219,10 +227,11 @@ export function watchLocation(
         }
       );
     } catch (error) {
-      console.error('Error watching location:', error);
+      logger.error('Error watching location:', error);
       throw new LocationError(
         'Failed to start location tracking',
-        'WATCH_FAILED'
+        'WATCH_FAILED',
+        'location.watch.failed'
       );
     }
   };

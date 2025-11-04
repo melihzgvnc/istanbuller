@@ -2,6 +2,7 @@ import Theme from "@/constants/theme";
 import { useLanguage } from "@/context/LanguageContext";
 import { AttractionWithDistance } from "@/types";
 import { mediumHaptic } from "@/utils/haptics";
+import { useResponsive } from "@/hooks/useResponsive";
 import React from "react";
 import {
   ActivityIndicator,
@@ -30,7 +31,12 @@ export default function AttractionList({
   onAttractionPress,
 }: AttractionListProps) {
   const { t } = useLanguage();
+  const { isTablet } = useResponsive();
   const [refreshing, setRefreshing] = React.useState(false);
+
+  // Calculate number of columns for tablet layout
+  const numColumns = isTablet ? 2 : 1;
+  const columnWrapperStyle = isTablet ? styles.columnWrapper : undefined;
 
   const handleRefresh = async () => {
     mediumHaptic();
@@ -114,6 +120,9 @@ export default function AttractionList({
       renderItem={({ item }) => (
         <AttractionCard attraction={item} onPress={onAttractionPress} />
       )}
+      numColumns={numColumns}
+      key={numColumns}
+      columnWrapperStyle={columnWrapperStyle}
       contentContainerStyle={styles.listContent}
       refreshControl={
         <RefreshControl
@@ -124,15 +133,10 @@ export default function AttractionList({
         />
       }
       showsVerticalScrollIndicator={false}
-      getItemLayout={(data, index) => ({
-        length: 280, // Approximate item height (200px image + 80px content)
-        offset: 288 * index, // 280 + 8 margin
-        index,
-      })}
       removeClippedSubviews={true}
-      maxToRenderPerBatch={5}
+      maxToRenderPerBatch={isTablet ? 8 : 5}
       updateCellsBatchingPeriod={50}
-      initialNumToRender={5}
+      initialNumToRender={isTablet ? 8 : 5}
       windowSize={10}
     />
   );
@@ -143,6 +147,10 @@ const styles = StyleSheet.create({
     paddingVertical: Theme.spacing.base,
     paddingBottom: Theme.spacing["2xl"],
   },
+  columnWrapper: {
+    justifyContent: "space-between",
+    paddingHorizontal: Theme.spacing.sm,
+  },
   centerContainer: {
     flex: 1,
     justifyContent: "center",
@@ -150,18 +158,18 @@ const styles = StyleSheet.create({
     padding: Theme.spacing["2xl"],
   },
   loadingText: {
+    fontFamily: Theme.typography.fontFamily.medium,
     marginTop: Theme.spacing.base,
     fontSize: Theme.typography.fontSize.base,
     color: Theme.colors.text.secondary,
-    fontWeight: Theme.typography.fontWeight.medium,
   },
   errorIcon: {
     fontSize: 64,
     marginBottom: Theme.spacing.base,
   },
   errorTitle: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize["2xl"],
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.sm,
   },
@@ -182,17 +190,17 @@ const styles = StyleSheet.create({
     ...Theme.shadows.base,
   },
   retryButtonText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     color: Theme.colors.text.inverse,
     fontSize: Theme.typography.fontSize.base,
-    fontWeight: Theme.typography.fontWeight.semibold,
   },
   emptyIcon: {
     fontSize: 64,
     marginBottom: Theme.spacing.base,
   },
   emptyTitle: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize["2xl"],
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.sm,
   },
@@ -213,8 +221,8 @@ const styles = StyleSheet.create({
     ...Theme.shadows.base,
   },
   refreshButtonText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     color: Theme.colors.text.inverse,
     fontSize: Theme.typography.fontSize.base,
-    fontWeight: Theme.typography.fontWeight.semibold,
   },
 });

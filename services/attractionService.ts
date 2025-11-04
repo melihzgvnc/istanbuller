@@ -4,29 +4,8 @@ import districtsData from '../data/districts.json';
 import { DISTRICT_CONFIGS } from '../constants/Districts';
 import { DISTRICT_METADATA } from '../constants/DistrictMetadata';
 import { getAttractionImage } from '../constants/AttractionImages';
-
-/**
- * Validates that an attraction object has all required fields
- */
-function isValidAttraction(attraction: any): attraction is Attraction {
-  return (
-    typeof attraction === 'object' &&
-    attraction !== null &&
-    typeof attraction.id === 'string' &&
-    attraction.id.length > 0 &&
-    typeof attraction.name === 'string' &&
-    attraction.name.length > 0 &&
-    typeof attraction.description === 'string' &&
-    typeof attraction.summary === 'string' &&
-    typeof attraction.imageUrl === 'string' &&
-    typeof attraction.coordinates === 'object' &&
-    typeof attraction.coordinates.latitude === 'number' &&
-    typeof attraction.coordinates.longitude === 'number' &&
-    typeof attraction.district === 'string' &&
-    typeof attraction.category === 'string' &&
-    typeof attraction.address === 'string'
-  );
-}
+import { logger } from '../utils/logger';
+import { validateAttractions, validateDistricts, formatValidationResult } from '../utils/validation';
 
 /**
  * Gets the appropriate image for a district from DISTRICT_METADATA
@@ -46,6 +25,51 @@ function getDistrictImage(districtName: IstanbulDistrict): number {
 }
 
 /**
+ * Validates and loads district data from JSON
+ * @returns Validated district data or throws error
+ */
+function loadValidatedDistricts() {
+  try {
+    // Validate districts data structure
+    const districtValidation = validateDistricts(districtsData);
+
+    // Log validation result for debugging
+    logger.log('District validation result:', {
+      isValid: districtValidation.isValid,
+      dataLength: districtValidation.data?.length || 0,
+      errorsCount: districtValidation.errors.length,
+      warningsCount: districtValidation.warnings.length,
+    });
+
+    // Log validation warnings
+    if (districtValidation.warnings.length > 0) {
+      logger.warn('District data validation warnings:', districtValidation.warnings);
+    }
+
+    // Handle validation errors
+    if (!districtValidation.isValid) {
+      logger.error('District data validation failed:', formatValidationResult(districtValidation));
+      logger.error('Validation errors:', districtValidation.errors);
+
+      // Attempt to use partial data if available
+      if (districtValidation.data && districtValidation.data.length > 0) {
+        logger.warn(`Using ${districtValidation.data.length} valid districts despite validation errors`);
+        return districtValidation.data;
+      } else {
+        const err = new Error('No valid districts found in data');
+        (err as any).translationKey = 'districts.no.valid.data';
+        throw err;
+      }
+    }
+
+    return districtValidation.data || [];
+  } catch (error) {
+    logger.error('Error validating district data:', error);
+    throw error;
+  }
+}
+
+/**
  * Creates a synthetic attraction for a district that has no specific attractions
  * @param districtName - The name of the district
  * @returns A synthetic attraction representing the district itself
@@ -53,10 +77,30 @@ function getDistrictImage(districtName: IstanbulDistrict): number {
 function createDistrictAttraction(districtName: IstanbulDistrict): Attraction | null {
   const districtConfig = DISTRICT_CONFIGS.find(d => d.name === districtName);
   const districtMetadata = DISTRICT_METADATA[districtName];
-  const districtData = districtsData.districts.find(d => d.name === districtName);
 
-  if (!districtConfig || !districtMetadata || !districtData) {
+  // Use validated district data
+  const validatedDistricts = loadValidatedDistricts();
+  const districtData = validatedDistricts.find(d => d.name === districtName);
+
+  if (!districtConfig || !districtMetadata) {
+    logger.warn(`Missing configuration or metadata for district: ${districtName}`);
     return null;
+  }
+
+  if (!districtData) {
+    logger.warn(`No validated data found for district: ${districtName}, using fallback`);
+    // Create fallback with available data
+    return {
+      id: `district-${districtName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+      name: districtMetadata.displayName,
+      description: `Explore the ${districtMetadata.displayName} district of Istanbul`,
+      summary: districtMetadata.keyLandmarks.join(', '),
+      imageUrl: getDistrictImage(districtName),
+      coordinates: districtConfig.center,
+      district: districtName,
+      category: AttractionCategory.HISTORICAL,
+      address: `${districtMetadata.displayName}, İstanbul`,
+    };
   }
 
   return {
@@ -81,27 +125,42 @@ function createDistrictAttraction(districtName: IstanbulDistrict): Attraction | 
  */
 export function getAllAttractions(): Attraction[] {
   try {
-    if (!attractionsData || !Array.isArray(attractionsData.attractions)) {
-      throw new Error('Invalid attractions data format');
+    // Validate attractions data structure
+    const attractionValidation = validateAttractions(attractionsData);
+
+    // Log validation warnings
+    if (attractionValidation.warnings.length > 0) {
+      logger.warn('Attraction data validation warnings:', attractionValidation.warnings);
     }
 
-    const validAttractions = attractionsData.attractions
-      .filter((attraction) => {
-        const isValid = isValidAttraction(attraction);
-        if (!isValid) {
-          console.warn(`Invalid attraction data found, skipping:`, attraction);
-        }
-        return isValid;
-      })
-      .map((attraction) => ({
-        ...attraction,
-        // Convert image path string to require() module ID using static mapping
-        imageUrl: getAttractionImage(attraction.imageUrl),
-      }));
+    // Handle validation errors
+    if (!attractionValidation.isValid) {
+      logger.error('Attraction data validation failed:', formatValidationResult(attractionValidation));
 
-    if (validAttractions.length === 0) {
-      throw new Error('No valid attractions found in data');
+      // Attempt to use partial data if available
+      if (attractionValidation.data && attractionValidation.data.length > 0) {
+        logger.warn(`Using ${attractionValidation.data.length} valid attractions despite validation errors`);
+      } else {
+        const err = new Error('No valid attractions found in data');
+        (err as any).translationKey = 'attractions.no.valid.data';
+        throw err;
+      }
     }
+
+    // Use validated data or fall back to empty array
+    const validatedAttractions = attractionValidation.data || [];
+
+    if (validatedAttractions.length === 0) {
+      const err = new Error('No valid attractions found in data');
+      (err as any).translationKey = 'attractions.no.valid.data';
+      throw err;
+    }
+
+    // Convert image paths to require() module IDs
+    const validAttractions = validatedAttractions.map((attraction) => ({
+      ...attraction,
+      imageUrl: getAttractionImage(attraction.imageUrl),
+    }));
 
     // Find districts without attractions
     const allDistricts = Object.values(IstanbulDistrict);
@@ -119,8 +178,10 @@ export function getAllAttractions(): Attraction[] {
 
     return [...validAttractions as Attraction[], ...syntheticAttractions];
   } catch (error) {
-    console.error('Error loading attractions:', error);
-    throw new Error('Failed to load attraction data');
+    logger.error('Error loading attractions:', error);
+    const err = new Error('Failed to load attraction data');
+    (err as any).translationKey = 'attractions.load.failed';
+    throw err;
   }
 }
 

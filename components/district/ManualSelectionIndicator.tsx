@@ -14,19 +14,18 @@ import { lightHaptic } from '@/utils/haptics';
 
 interface ManualSelectionIndicatorProps {
   district: IstanbulDistrict;
-  onClearSelection: () => void;
+  onPress: () => void;
 }
 
 export const ManualSelectionIndicator: React.FC<ManualSelectionIndicatorProps> = ({
   district,
-  onClearSelection,
+  onPress,
 }) => {
-  const { t } = useLanguage();
   const districtInfo = getDistrictMetadata(district);
 
-  const handleClearPress = () => {
+  const handlePress = () => {
     lightHaptic();
-    onClearSelection();
+    onPress();
   };
 
   if (!districtInfo) {
@@ -36,12 +35,12 @@ export const ManualSelectionIndicator: React.FC<ManualSelectionIndicatorProps> =
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={handleClearPress}
+      onPress={handlePress}
       activeOpacity={0.7}
       accessible={true}
-      accessibilityLabel={`Manually selected district: ${districtInfo.displayName}. Tap to clear selection.`}
+      accessibilityLabel={`Manually selected district: ${districtInfo.displayName}. Tap to change.`}
       accessibilityRole="button"
-      accessibilityHint="Clears manual district selection and returns to automatic detection"
+      accessibilityHint="Opens district picker to change your selection"
     >
       <View style={styles.content}>
         {/* Manual Icon */}
@@ -55,14 +54,14 @@ export const ManualSelectionIndicator: React.FC<ManualSelectionIndicatorProps> =
         </Text>
 
         {/* Manual Badge */}
-        <View style={styles.badge}>
+        {/* <View style={styles.badge}>
           <Text style={styles.badgeText}>{t('district.manual')}</Text>
-        </View>
+        </View> */}
 
         {/* Close Icon */}
-        <View style={styles.closeIcon}>
+        {/* <View style={styles.closeIcon}>
           <Text style={styles.closeIconText}>✕</Text>
-        </View>
+        </View> */}
       </View>
     </TouchableOpacity>
   );
@@ -98,8 +97,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   districtName: {
-    fontSize: Typography.fontSize.sm,
-    fontWeight: Typography.fontWeight.semibold,
+    fontFamily: Typography.fontFamily.semibold,
+    fontSize: Typography.fontSize.base,
     color: Colors.primary[700],
     maxWidth: 100,
   },

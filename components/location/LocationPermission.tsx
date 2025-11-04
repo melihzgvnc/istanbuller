@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import { logger } from "@/utils/logger";
 
 interface LocationPermissionProps {
   onPermissionGranted: () => void;
@@ -41,7 +42,7 @@ export default function LocationPermission({
         onPermissionDenied();
       }
     } catch (error) {
-      console.error("Error requesting permission:", error);
+      logger.error("Error requesting permission:", error);
       errorHaptic();
       setShowSettingsPrompt(true);
       onPermissionDenied();
@@ -85,7 +86,7 @@ export default function LocationPermission({
 
         <Animated.View
           entering={FadeInDown.duration(400).delay(400)}
-          style={{ width: "100%" }}
+          style={styles.buttonGroup}
         >
           <TouchableOpacity
             style={styles.primaryButton}
@@ -177,7 +178,7 @@ export default function LocationPermission({
 
       <Animated.View
         entering={FadeInDown.duration(400).delay(500)}
-        style={{ width: "100%" }}
+        style={styles.buttonGroup}
       >
         <TouchableOpacity
           style={[styles.primaryButton, isRequesting && styles.buttonDisabled]}
@@ -221,8 +222,8 @@ const styles = StyleSheet.create({
     borderRadius: Theme.borderRadius.full,
   },
   title: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize["3xl"],
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.base,
     textAlign: "center",
@@ -266,9 +267,9 @@ const styles = StyleSheet.create({
     ...Theme.shadows.base,
   },
   primaryButtonText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     color: Theme.colors.text.inverse,
     fontSize: Theme.typography.fontSize.lg,
-    fontWeight: Theme.typography.fontWeight.semibold,
     marginLeft: Theme.spacing.sm,
   },
   secondaryButton: {
@@ -281,12 +282,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   secondaryButtonText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     color: Theme.colors.primary[700],
     fontSize: Theme.typography.fontSize.base,
-    fontWeight: Theme.typography.fontWeight.semibold,
   },
   buttonDisabled: {
     opacity: 0.6,
+  },
+  buttonGroup: {
+    width: "100%",
   },
   privacyNote: {
     fontSize: Theme.typography.fontSize.xs,

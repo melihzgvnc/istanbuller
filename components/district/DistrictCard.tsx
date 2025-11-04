@@ -1,13 +1,15 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { DistrictInfo } from "@/constants/DistrictMetadata";
 import Theme from "@/constants/theme";
 import { useLanguage } from "@/context/LanguageContext";
+import { useResponsive } from "@/hooks/useResponsive";
 import { getAttractionsByDistrict } from "@/services/attractionService";
 import { IstanbulDistrict } from "@/types";
 import { mediumHaptic } from "@/utils/haptics";
 import { getTranslatedDistrictField } from "@/utils/translations";
-import React from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useMemo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 interface DistrictCardProps {
   district: IstanbulDistrict;
@@ -15,14 +17,18 @@ interface DistrictCardProps {
   onPress: (district: IstanbulDistrict) => void;
 }
 
-export default function DistrictCard({
+function DistrictCard({
   district,
   info,
   onPress,
 }: DistrictCardProps) {
   const { t, language } = useLanguage();
-  const attractions = getAttractionsByDistrict(district);
-  const attractionCount = attractions.length;
+  const { isTablet } = useResponsive();
+
+  // Memoize expensive calculation
+  const attractionCount = useMemo(() => {
+    return getAttractionsByDistrict(district).length;
+  }, [district]);
 
   const handlePress = () => {
     mediumHaptic();
@@ -31,7 +37,11 @@ export default function DistrictCard({
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      style={({ pressed }) => [
+        styles.card,
+        isTablet && styles.cardTablet,
+        pressed && styles.cardPressed,
+      ]}
       onPress={handlePress}
       accessible={true}
       accessibilityRole="button"
@@ -40,7 +50,13 @@ export default function DistrictCard({
     >
       <View style={styles.imageContainer}>
         {info.image ? (
-          <Image source={info.image} style={styles.image} resizeMode="cover" />
+          <OptimizedImage
+            source={info.image}
+            style={styles.image}
+            contentFit="cover"
+            aspectRatio={1}
+            fallbackIcon="map-outline"
+          />
         ) : (
           <View style={styles.iconFallback}>
             <IconSymbol
@@ -73,16 +89,20 @@ export default function DistrictCard({
             {attractionCount}{" "}
             {attractionCount === 1 ? t("district.place") : t("district.places")}
           </Text>
-          <IconSymbol
-            name="chevron.right"
-            size={16}
-            color={Theme.colors.text.tertiary}
-          />
+          <View style={styles.chevronContainer}>
+            <IconSymbol
+              name="chevron.right"
+              size={16}
+              color={Theme.colors.text.tertiary}
+            />
+          </View>
         </View>
       </View>
     </Pressable>
   );
 }
+
+export default React.memo(DistrictCard);
 
 const styles = StyleSheet.create({
   card: {
@@ -94,20 +114,24 @@ const styles = StyleSheet.create({
     minHeight: Theme.accessibility.minTouchTarget,
     ...Theme.shadows.base,
   },
+  cardTablet: {
+    padding: Theme.spacing.lg,
+    marginBottom: Theme.spacing.lg,
+  },
   cardPressed: {
     opacity: 0.7,
     transform: [{ scale: 0.98 }],
   },
   imageContainer: {
-    width: 72,
-    height: 72,
+    width: Theme.spacing["4xl"] + Theme.spacing.lg, // 68dp (normalized)
+    aspectRatio: 1,
     borderRadius: Theme.borderRadius.md,
     overflow: "hidden",
     marginRight: Theme.spacing.base,
   },
   image: {
     width: "100%",
-    height: "100%",
+    // height removed - using aspectRatio for responsive scaling
   },
   iconFallback: {
     width: "100%",
@@ -119,14 +143,16 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: "space-between",
+    minHeight: Theme.accessibility.minTouchTarget,
   },
   name: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize.lg,
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs,
   },
   description: {
+    fontFamily: Theme.typography.fontFamily.regular,
     fontSize: Theme.typography.fontSize.sm,
     color: Theme.colors.text.secondary,
     lineHeight: 18,
@@ -136,10 +162,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    minHeight: Theme.accessibility.minTouchTarget,
   },
   attractionCount: {
+    fontFamily: Theme.typography.fontFamily.medium,
     fontSize: Theme.typography.fontSize.sm,
     color: Theme.colors.text.tertiary,
-    fontWeight: Theme.typography.fontWeight.medium,
+  },
+  chevronContainer: {
+    minWidth: Theme.accessibility.minTouchTarget,
+    minHeight: Theme.accessibility.minTouchTarget,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

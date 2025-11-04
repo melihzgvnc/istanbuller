@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
     borderRadius: Theme.borderRadius.full,
   },
   title: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize.xl,
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.base,
     textAlign: "center",
@@ -186,9 +186,9 @@ const styles = StyleSheet.create({
     ...Theme.shadows.base,
   },
   primaryButtonText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     color: Theme.colors.text.inverse,
     fontSize: Theme.typography.fontSize.lg,
-    fontWeight: Theme.typography.fontWeight.semibold,
     marginLeft: Theme.spacing.sm,
   },
   secondaryButton: {
@@ -201,8 +201,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   secondaryButtonText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     color: Theme.colors.primary[700],
     fontSize: Theme.typography.fontSize.base,
-    fontWeight: Theme.typography.fontWeight.semibold,
   },
 });

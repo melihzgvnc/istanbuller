@@ -1,7 +1,7 @@
-import BannerAdComponent from "@/components/ads/BannerAd";
 import DistanceBadge from "@/components/attractions/DistanceBadge";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import OptimizedImage from "@/components/ui/OptimizedImage";
+import { INTERSTITIAL_AD_UNIT_ID } from "@/constants/AdConfig";
 import { HERO_IMAGE_CONFIG } from "@/constants/ImageConfig";
 import Theme from "@/constants/theme";
 import { useLanguage } from "@/context/LanguageContext";
@@ -29,31 +29,29 @@ import {
 import Animated, {
   FadeIn,
   FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
 } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { logger } from "@/utils/logger";
+import { AdConfig, UIConstants } from "@/constants/AppConfig";
+import { createSafeAreaPadding, createSafeAreaStyle } from "@/utils/styleUtils";
+import { useResponsive } from "@/hooks/useResponsive";
 
 export default function AttractionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { location } = useLocation();
   const { t, language } = useLanguage();
+  const insets = useSafeAreaInsets();
+  const { isLandscape, isTablet } = useResponsive();
+
+  // Initialize interstitial ad hook
+  const { showAd } = useInterstitialAd(INTERSTITIAL_AD_UNIT_ID);
 
   const [attraction, setAttraction] = useState<AttractionWithDistance | null>(
     null
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Initialize interstitial ad hook
-  const { trackView } = useInterstitialAd({
-    viewsBeforeAd: 5,
-    enabled: true,
-  });
 
   useEffect(() => {
     const loadAttraction = () => {
@@ -114,7 +112,7 @@ export default function AttractionDetailScreen() {
               });
             }
           } catch (distanceError) {
-            console.warn("Failed to calculate distance:", distanceError);
+            logger.warn("Failed to calculate distance:", distanceError);
             // Set attraction without distance info
             setAttraction({
               ...attractionData,
@@ -152,31 +150,24 @@ export default function AttractionDetailScreen() {
     loadAttraction();
   }, [id, location]);
 
-  // Track view when attraction is loaded
+  // Trigger interstitial ad after attraction loads successfully
   useEffect(() => {
     if (attraction && !loading && !error) {
-      trackView();
+      // Small delay to ensure UI is ready
+      const timer = setTimeout(() => {
+        showAd().catch((err) => {
+          logger.warn("Failed to show interstitial ad:", err);
+        });
+      }, AdConfig.INTERSTITIAL_DELAY_MS);
+
+      return () => clearTimeout(timer);
     }
-  }, [attraction, loading, error, trackView]);
-
-  const backButtonScale = useSharedValue(1);
-
-  const backButtonAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: backButtonScale.value }],
-  }));
+  }, [attraction, loading, error, showAd]);
 
   // Handle back navigation
   const handleBack = () => {
     mediumHaptic();
     router.back();
-  };
-
-  const handleBackPressIn = () => {
-    backButtonScale.value = withSpring(0.9, { damping: 15, stiffness: 300 });
-  };
-
-  const handleBackPressOut = () => {
-    backButtonScale.value = withSpring(1, { damping: 15, stiffness: 300 });
   };
 
   // Handle navigation to attraction
@@ -194,27 +185,27 @@ export default function AttractionDetailScreen() {
   // Loading state
   if (loading) {
     return (
-      <SafeAreaView style={styles.centerContainer} edges={["top", "bottom"]}>
+      <View style={[styles.centerContainer, createSafeAreaStyle(insets)]}>
         <StatusBar
           barStyle="light-content"
           backgroundColor={Theme.colors.background}
         />
         <ActivityIndicator size="large" color={Theme.colors.primary[500]} />
-      </SafeAreaView>
+      </View>
     );
   }
 
   // Error state
   if (error || !attraction) {
     return (
-      <SafeAreaView style={styles.centerContainer} edges={["top", "bottom"]}>
+      <View style={[styles.centerContainer, createSafeAreaStyle(insets)]}>
         <StatusBar
           barStyle="dark-content"
           backgroundColor={Theme.colors.background}
         />
         <Animated.View
           entering={FadeIn.duration(300)}
-          style={{ alignItems: "center" }}
+          style={styles.errorContainer}
         >
           <Ionicons
             name="alert-circle-outline"
@@ -224,11 +215,15 @@ export default function AttractionDetailScreen() {
           <Text style={styles.errorText}>
             {error || t("attraction.notFound")}
           </Text>
-          <Pressable style={styles.backButton} onPress={handleBack}>
+          <Pressable
+            style={styles.backButton}
+            onPress={handleBack}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
             <Text style={styles.backButtonText}>{t("common.goBack")}</Text>
           </Pressable>
         </Animated.View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -243,43 +238,45 @@ export default function AttractionDetailScreen() {
 
         <ScrollView
           style={styles.scrollView}
+          contentContainerStyle={[
+            styles.scrollContent,
+            createSafeAreaPadding.bottom(insets),
+          ]}
           showsVerticalScrollIndicator={false}
         >
           {/* Hero Image */}
-          <View style={styles.imageContainer}>
+          <View style={[
+            styles.imageContainer,
+            createSafeAreaPadding.top(insets),
+            isLandscape && styles.imageContainerLandscape
+          ]}>
             <OptimizedImage
               source={attraction.imageUrl}
               style={styles.heroImage}
+              aspectRatio={isLandscape ? 21 / 9 : 16 / 9}
               fallbackIcon="image-outline"
               fallbackIconSize={80}
               fallbackText="Image unavailable"
               showLoadingIndicator={true}
               {...HERO_IMAGE_CONFIG}
             />
-
-            {/* Back Button Overlay */}
-            <AnimatedPressable
-              style={[styles.backButtonOverlay, backButtonAnimatedStyle]}
-              onPress={handleBack}
-              onPressIn={handleBackPressIn}
-              onPressOut={handleBackPressOut}
-              accessible={true}
-              accessibilityRole="button"
-              accessibilityLabel="Go back"
-              accessibilityHint="Double tap to return to the previous screen"
-            >
-              <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-            </AnimatedPressable>
           </View>
 
           {/* Content */}
           <Animated.View
             entering={FadeInDown.duration(400).delay(100)}
-            style={styles.content}
+            style={[
+              styles.content,
+              isLandscape && styles.contentLandscape,
+              isTablet && styles.contentTablet
+            ]}
           >
             {/* Header Section */}
             <View style={styles.headerSection}>
-              <Text style={styles.name}>
+              <Text style={[
+                styles.name,
+                isLandscape && styles.nameLandscape
+              ]}>
                 {getTranslatedAttractionField(
                   attraction.id,
                   "name",
@@ -318,9 +315,18 @@ export default function AttractionDetailScreen() {
             )}
 
             {/* Description Section */}
-            <View style={styles.descriptionSection}>
-              <Text style={styles.sectionTitle}>{t("attraction.about")}</Text>
-              <Text style={styles.description}>
+            <View style={[
+              styles.descriptionSection,
+              isLandscape && styles.descriptionSectionLandscape
+            ]}>
+              <Text style={[
+                styles.sectionTitle,
+                isLandscape && styles.sectionTitleLandscape
+              ]}>{t("attraction.about")}</Text>
+              <Text style={[
+                styles.description,
+                isLandscape && styles.descriptionLandscape
+              ]}>
                 {getTranslatedAttractionField(
                   attraction.id,
                   "description",
@@ -352,6 +358,7 @@ export default function AttractionDetailScreen() {
               accessible={true}
               accessibilityRole="button"
               accessibilityLabel={t("attraction.takeMeThere")}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Ionicons name="navigate-circle" size={22} color="#FFFFFF" />
               <Text style={styles.navigationButtonText}>
@@ -360,9 +367,6 @@ export default function AttractionDetailScreen() {
             </Pressable>
           </Animated.View>
         </ScrollView>
-
-        {/* Banner Ad */}
-        <BannerAdComponent />
       </View>
     </ErrorBoundary>
   );
@@ -380,44 +384,56 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.background,
     padding: Theme.spacing.xl,
   },
+  errorContainer: {
+    alignItems: "center",
+  },
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    // Base style for scroll content, safe area padding applied dynamically
+  },
   imageContainer: {
     position: "relative",
-    width: "100%",
-    height: 180,
+    width: UIConstants.FULL_WIDTH,
+    aspectRatio: 16 / 9, // Use aspectRatio instead of fixed height for responsive scaling
     borderBottomLeftRadius: Theme.borderRadius.lg,
     borderBottomRightRadius: Theme.borderRadius.lg,
     overflow: "hidden",
   },
-  heroImage: {
-    width: "100%",
-    height: "100%",
+  imageContainerLandscape: {
+    aspectRatio: 21 / 9, // Wider aspect ratio for landscape
   },
-  backButtonOverlay: {
-    position: "absolute",
-    top: 48,
-    left: Theme.spacing.base,
-    width: Theme.accessibility.minTouchTarget,
-    height: Theme.accessibility.minTouchTarget,
-    borderRadius: Theme.borderRadius.full,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+  heroImage: {
+    width: UIConstants.FULL_WIDTH,
+    // height removed - using aspectRatio from container for responsive scaling
   },
   content: {
     padding: Theme.spacing.lg,
     gap: Theme.spacing.xl,
   },
+  contentLandscape: {
+    paddingHorizontal: Theme.spacing.xl,
+    paddingVertical: Theme.spacing.base,
+    gap: Theme.spacing.base,
+  },
+  contentTablet: {
+    paddingHorizontal: Theme.spacing.xl * 2,
+    paddingVertical: Theme.spacing.lg,
+    gap: Theme.spacing.lg,
+  },
   headerSection: {
     gap: Theme.spacing.md,
   },
   name: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize["3xl"],
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     lineHeight: 34,
+  },
+  nameLandscape: {
+    fontSize: Theme.typography.fontSize["2xl"],
+    lineHeight: 28,
   },
   metaRow: {
     flexDirection: "row",
@@ -435,8 +451,8 @@ const styles = StyleSheet.create({
     minHeight: Theme.accessibility.minTouchTarget / 1.5,
   },
   categoryText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     fontSize: Theme.typography.fontSize.sm,
-    fontWeight: Theme.typography.fontWeight.semibold,
     color: Theme.colors.primary[500],
   },
   districtBadge: {
@@ -450,22 +466,26 @@ const styles = StyleSheet.create({
     minHeight: Theme.accessibility.minTouchTarget / 1.5,
   },
   districtText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     fontSize: Theme.typography.fontSize.sm,
-    fontWeight: Theme.typography.fontWeight.semibold,
     color: Theme.colors.success[500],
   },
   distanceSection: {
     gap: Theme.spacing.sm,
   },
   sectionTitle: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize["2xl"],
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs,
   },
+  sectionTitleLandscape: {
+    fontSize: Theme.typography.fontSize.xl,
+    marginBottom: Theme.spacing.xs / 2,
+  },
   sectionTitleSecondary: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     fontSize: Theme.typography.fontSize.lg,
-    fontWeight: Theme.typography.fontWeight.semibold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs,
   },
@@ -476,14 +496,24 @@ const styles = StyleSheet.create({
     padding: Theme.spacing.lg,
     borderWidth: 1,
     borderColor: Theme.colors.border.default,
-    borderLeftWidth: 3,
+    borderLeftWidth: UIConstants.ACCENT_BORDER_WIDTH,
     borderLeftColor: Theme.colors.primary[400],
     paddingLeft: Theme.spacing.xl,
   },
+  descriptionSectionLandscape: {
+    padding: Theme.spacing.base,
+    paddingLeft: Theme.spacing.lg,
+    gap: Theme.spacing.sm,
+  },
   description: {
+    fontFamily: Theme.typography.fontFamily.regular,
     fontSize: Theme.typography.fontSize.xl,
     color: Theme.colors.text.secondary,
     lineHeight: 30,
+  },
+  descriptionLandscape: {
+    fontSize: Theme.typography.fontSize.base,
+    lineHeight: 24,
   },
   addressSection: {
     gap: Theme.spacing.sm,
@@ -499,6 +529,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   address: {
+    fontFamily: Theme.typography.fontFamily.regular,
     flex: 1,
     fontSize: Theme.typography.fontSize.sm,
     color: Theme.colors.text.secondary,
@@ -513,12 +544,12 @@ const styles = StyleSheet.create({
     paddingVertical: Theme.spacing.sm,
     paddingHorizontal: Theme.spacing.lg,
     borderRadius: Theme.borderRadius.md,
-    minHeight: Theme.accessibility.minTouchTarget - 6,
+    minHeight: Theme.accessibility.minTouchTarget,
     marginBottom: Theme.spacing.lg,
   },
   navigationButtonText: {
+    fontFamily: Theme.typography.fontFamily.semibold,
     fontSize: Theme.typography.fontSize.base,
-    fontWeight: Theme.typography.fontWeight.semibold,
     color: Theme.colors.text.inverse,
   },
   errorText: {

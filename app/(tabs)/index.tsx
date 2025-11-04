@@ -1,22 +1,30 @@
-import BannerAdComponent from "@/components/ads/BannerAd";
+import BannerAd from "@/components/ads/BannerAd";
 import AttractionList from "@/components/attractions/AttractionList";
 import { DistrictPicker } from "@/components/district/DistrictPicker";
 import DistrictSelectionPrompt from "@/components/district/DistrictSelectionPrompt";
 import { ManualSelectionIndicator } from "@/components/district/ManualSelectionIndicator";
 import LocationPermission from "@/components/location/LocationPermission";
+import { BANNER_AD_UNIT_ID_HOME } from "@/constants/AdConfig";
 import Theme from "@/constants/theme";
 import { useLanguage } from "@/context/LanguageContext";
+import { useManualSelection } from "@/context/ManualSelectionContext";
 import { useAttractions } from "@/hooks/useAttractions";
 import { useLocation } from "@/hooks/useLocation";
 import { IstanbulDistrict } from "@/types";
-import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, StatusBar, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { logger } from "@/utils/logger";
+import { createSafeAreaStyle } from "@/utils/styleUtils";
+import { useResponsive } from "@/hooks/useResponsive";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { t } = useLanguage();
+  const { onClearTriggered } = useManualSelection();
+  const insets = useSafeAreaInsets();
+  const { isLandscape, isTablet } = useResponsive();
 
   // District picker visibility state
   const [isPickerVisible, setIsPickerVisible] = useState(false);
@@ -63,12 +71,14 @@ export default function HomeScreen() {
   // Handle permission denied
   const handlePermissionDenied = () => {
     // User denied permission, show appropriate message
-    console.log("Location permission denied");
+    logger.log("Location permission denied");
   };
 
-  // Handle refresh - refresh both location and attractions
+  // Handle refresh - only refresh location if not in manual mode
   const handleRefresh = () => {
-    refreshLocation();
+    if (!isManualSelection) {
+      refreshLocation();
+    }
     refreshAttractions();
   };
 
@@ -79,8 +89,11 @@ export default function HomeScreen() {
 
   // Handle district selection from picker
   const handleDistrictSelect = async (selectedDistrict: IstanbulDistrict) => {
+    justSelectedRef.current = true;
     await setManualDistrict(selectedDistrict);
     setIsPickerVisible(false);
+    // Refresh attractions for the new district
+    refreshAttractions();
   };
 
   // Handle picker dismiss
@@ -98,12 +111,40 @@ export default function HomeScreen() {
     refreshLocation();
   };
 
-  // Handle clear manual selection
-  const handleClearSelection = async () => {
-    await clearManualSelection();
-    // Reset notification tracking when clearing manual selection
-    notificationShownRef.current = null;
+  // Handle manual selection indicator press - open picker to change district
+  const handleManualIndicatorPress = () => {
+    setIsPickerVisible(true);
   };
+
+  // Track if we just selected a district to avoid clearing it immediately
+  const justSelectedRef = useRef(false);
+
+  // Handle tab focus - only close picker when leaving
+  useFocusEffect(
+    useCallback(() => {
+      // If we just selected a district, don't do anything
+      if (justSelectedRef.current) {
+        justSelectedRef.current = false;
+        return;
+      }
+
+      return () => {
+        // Cleanup: close picker when leaving the screen
+        setIsPickerVisible(false);
+      };
+    }, [])
+  );
+
+  // Register callback to clear manual selection when triggered from tab layout
+  useEffect(() => {
+    const unregister = onClearTriggered(() => {
+      if (isManualSelection) {
+        clearManualSelection();
+      }
+    });
+
+    return unregister;
+  }, [isManualSelection, clearManualSelection, onClearTriggered]);
 
   // Handle switch to auto-detection
   const handleSwitchToAuto = async () => {
@@ -161,7 +202,7 @@ export default function HomeScreen() {
   // Show location permission screen if permission not granted
   if (!permissionGranted) {
     return (
-      <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+      <View style={[styles.container, createSafeAreaStyle(insets)]}>
         <StatusBar
           barStyle="dark-content"
           backgroundColor={Theme.colors.background}
@@ -170,7 +211,7 @@ export default function HomeScreen() {
           onPermissionGranted={handlePermissionGranted}
           onPermissionDenied={handlePermissionDenied}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -184,22 +225,29 @@ export default function HomeScreen() {
     location && !district && !isManualSelection && !locationLoading;
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <View style={[styles.container, createSafeAreaStyle(insets, { bottom: false })]}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor={Theme.colors.background}
       />
 
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{t("home.nearbyAttractions")}</Text>
+      <View style={[
+        styles.header,
+        isLandscape && styles.headerLandscape,
+        isTablet && styles.headerTablet
+      ]}>
+        <Text style={[
+          styles.title,
+          isLandscape && styles.titleLandscape
+        ]}>{t("home.nearbyAttractions")}</Text>
         {district && !isManualSelection && (
           <Text style={styles.subtitle}>{district}</Text>
         )}
         {isManualSelection && manuallySelectedDistrict && (
           <ManualSelectionIndicator
             district={manuallySelectedDistrict}
-            onClearSelection={handleClearSelection}
+            onPress={handleManualIndicatorPress}
           />
         )}
       </View>
@@ -230,15 +278,15 @@ export default function HomeScreen() {
       />
 
       {/* Banner Ad */}
-      <BannerAdComponent />
-    </SafeAreaView>
+      <BannerAd adUnitId={BANNER_AD_UNIT_ID_HOME} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Theme.colors.background,
   },
   header: {
     paddingHorizontal: Theme.spacing.base,
@@ -247,15 +295,27 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.colors.border.default,
     backgroundColor: Theme.colors.background,
   },
+  headerLandscape: {
+    paddingVertical: Theme.spacing.sm,
+    paddingHorizontal: Theme.spacing.lg,
+  },
+  headerTablet: {
+    paddingHorizontal: Theme.spacing.xl,
+    paddingVertical: Theme.spacing.lg,
+  },
   title: {
+    fontFamily: Theme.typography.fontFamily.bold,
     fontSize: Theme.typography.fontSize["3xl"],
-    fontWeight: Theme.typography.fontWeight.bold,
     color: Theme.colors.text.primary,
     marginBottom: Theme.spacing.xs,
   },
+  titleLandscape: {
+    fontSize: Theme.typography.fontSize["2xl"],
+    marginBottom: Theme.spacing.xs / 2,
+  },
   subtitle: {
+    fontFamily: Theme.typography.fontFamily.medium,
     fontSize: Theme.typography.fontSize.base,
     color: Theme.colors.text.secondary,
-    fontWeight: Theme.typography.fontWeight.medium,
   },
 });

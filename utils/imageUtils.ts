@@ -5,6 +5,8 @@
 
 import { Image } from 'expo-image';
 import { Attraction } from '@/types';
+import { logger } from './logger';
+import { ImageConfig } from '@/constants/AppConfig';
 
 /**
  * Preload images for better performance
@@ -19,7 +21,7 @@ export async function preloadImages(uris: string[]): Promise<void> {
       uris.map((uri) => Image.prefetch(uri))
     );
   } catch (error) {
-    console.warn('Failed to preload some images:', error);
+    logger.warn('Failed to preload some images:', error);
   }
 }
 
@@ -29,11 +31,11 @@ export async function preloadImages(uris: string[]): Promise<void> {
  * Only preloads remote images (strings), not local bundled images (numbers)
  * 
  * @param attractions - Array of attractions
- * @param limit - Maximum number of images to preload (default: 5)
+ * @param limit - Maximum number of images to preload (default from AppConfig)
  */
 export async function preloadAttractionImages(
   attractions: Attraction[],
-  limit: number = 5
+  limit: number = ImageConfig.PRELOAD_COUNT
 ): Promise<void> {
   const imageUris = attractions
     .slice(0, limit)
@@ -55,7 +57,7 @@ export async function clearImageCache(): Promise<void> {
     await Image.clearMemoryCache();
     await Image.clearDiskCache();
   } catch (error) {
-    console.warn('Failed to clear image cache:', error);
+    logger.warn('Failed to clear image cache:', error);
   }
 }
 
@@ -69,7 +71,7 @@ export async function getCacheSize(): Promise<{ disk: number; memory: number }> 
     // This is a placeholder for future implementation
     return { disk: 0, memory: 0 };
   } catch (error) {
-    console.warn('Failed to get cache size:', error);
+    logger.warn('Failed to get cache size:', error);
     return { disk: 0, memory: 0 };
   }
 }
@@ -91,7 +93,7 @@ export async function validateImageUrl(uri: string): Promise<boolean> {
     await Image.prefetch(uri);
     return true;
   } catch (error) {
-    console.warn('Invalid image URL:', uri, error);
+    logger.warn('Invalid image URL:', uri, error);
     return false;
   }
 }

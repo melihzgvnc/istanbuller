@@ -13,6 +13,7 @@ import {
   saveManualDistrict,
   clearManualDistrict,
 } from '@/services/storageService';
+import { logger } from '@/utils/logger';
 
 export interface UseLocationReturn {
   location: Coordinates | null;
@@ -40,7 +41,7 @@ export function useLocation(): UseLocationReturn {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
-  
+
   // Manual selection state
   const [manuallySelectedDistrict, setManuallySelectedDistrict] = useState<IstanbulDistrict | null>(null);
   const [lastAutoDetectedDistrict, setLastAutoDetectedDistrict] = useState<IstanbulDistrict | null>(null);
@@ -53,7 +54,7 @@ export function useLocation(): UseLocationReturn {
     try {
       await saveManualDistrict(district);
       setManuallySelectedDistrict(district);
-      
+
       // Update the displayed district to the manual selection
       if (district) {
         setDistrict(district);
@@ -62,7 +63,7 @@ export function useLocation(): UseLocationReturn {
     } catch (err) {
       const errorMessage = 'Failed to save district selection';
       showErrorToast(errorMessage);
-      console.error('Error setting manual district:', err);
+      logger.error('Error setting manual district:', err);
     }
   }, []);
 
@@ -73,7 +74,7 @@ export function useLocation(): UseLocationReturn {
     try {
       await clearManualDistrict();
       setManuallySelectedDistrict(null);
-      
+
       // Restore the last auto-detected district if available
       if (lastAutoDetectedDistrict) {
         setDistrict(lastAutoDetectedDistrict);
@@ -84,12 +85,12 @@ export function useLocation(): UseLocationReturn {
           setDistrict(detectedDistrict);
         }
       }
-      
+
       showInfoToast('Switched to automatic district detection');
     } catch (err) {
       const errorMessage = 'Failed to clear district selection';
       showErrorToast(errorMessage);
-      console.error('Error clearing manual district:', err);
+      logger.error('Error clearing manual district:', err);
     }
   }, [lastAutoDetectedDistrict, location]);
 
@@ -100,29 +101,29 @@ export function useLocation(): UseLocationReturn {
     try {
       setLoading(true);
       setError(null);
-      
+
       const coords = await getCurrentLocation(15000, { silent });
-      
+
       if (coords) {
         setLocation(coords);
-        
+
         // Detect district from coordinates
         const detectedDistrict = getCurrentDistrict(coords);
-        
+
         // Update last auto-detected district
         setLastAutoDetectedDistrict(detectedDistrict);
-        
+
         // If manual selection is active, keep it but check if user entered the district
         if (manuallySelectedDistrict) {
           // Keep the manual selection as the displayed district
           setDistrict(manuallySelectedDistrict);
-          
+
           // If user entered a valid district that differs from manual selection, we'll handle notification in the UI
           // The UI component will detect this by comparing lastAutoDetectedDistrict with manuallySelectedDistrict
         } else {
           // No manual selection, use auto-detected district
           setDistrict(detectedDistrict);
-          
+
           if (!detectedDistrict) {
             const errorMsg = 'You appear to be outside Istanbul districts';
             setError(errorMsg);
@@ -139,11 +140,11 @@ export function useLocation(): UseLocationReturn {
         }
       }
     } catch (err) {
-      const errorMessage = err instanceof LocationError 
-        ? err.message 
+      const errorMessage = err instanceof LocationError
+        ? err.message
         : 'Failed to get your location';
       setError(errorMessage);
-      
+
       // Show appropriate toast based on error type (only if not silent)
       if (!silent) {
         if (err instanceof LocationError) {
@@ -170,12 +171,11 @@ export function useLocation(): UseLocationReturn {
     try {
       setLoading(true);
       setError(null);
-      
+
       const granted = await requestPermissions();
       setPermissionGranted(granted);
-      
+
       if (granted) {
-        showInfoToast('Location permission granted');
         // Automatically get location after permission is granted (silently to avoid blocking)
         await refreshLocation(true);
       } else {
@@ -185,8 +185,8 @@ export function useLocation(): UseLocationReturn {
         setLoading(false);
       }
     } catch (err) {
-      const errorMessage = err instanceof LocationError 
-        ? err.message 
+      const errorMessage = err instanceof LocationError
+        ? err.message
         : 'Failed to request location permissions';
       setError(errorMessage);
       showErrorToast(errorMessage);
@@ -200,13 +200,13 @@ export function useLocation(): UseLocationReturn {
    */
   const handleLocationUpdate = useCallback((coords: Coordinates) => {
     setLocation(coords);
-    
+
     // Detect district from new coordinates
     const detectedDistrict = getCurrentDistrict(coords);
-    
+
     // Update last auto-detected district
     setLastAutoDetectedDistrict(detectedDistrict);
-    
+
     // If manual selection is active, keep it but track the auto-detected district
     if (manuallySelectedDistrict) {
       // Keep the manual selection as the displayed district
@@ -235,7 +235,7 @@ export function useLocation(): UseLocationReturn {
           setDistrict(savedDistrict);
         }
       } catch (err) {
-        console.error('Error loading manual district selection:', err);
+        logger.error('Error loading manual district selection:', err);
       }
     };
 
@@ -256,7 +256,7 @@ export function useLocation(): UseLocationReturn {
       try {
         // Request permissions on mount
         await requestLocationPermission();
-        
+
         // Start watching location if permission granted
         if (permissionGranted) {
           // Watch location with optimizations:
@@ -268,7 +268,7 @@ export function useLocation(): UseLocationReturn {
           });
         }
       } catch (err) {
-        console.error('Error initializing location:', err);
+        logger.error('Error initializing location:', err);
       } finally {
         isInitializing = false;
       }
@@ -282,7 +282,7 @@ export function useLocation(): UseLocationReturn {
         cleanup();
       }
     };
-  }, [permissionGranted, handleLocationUpdate, requestLocationPermission]);
+  }, [permissionGranted, handleLocationUpdate]);
 
   // Determine if current district is from manual selection
   const isManualSelection = manuallySelectedDistrict !== null;

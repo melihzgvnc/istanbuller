@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { logger } from '@/utils/logger';
 
 interface Props {
   children: ReactNode;
@@ -35,7 +36,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error details for debugging
-    console.error('Error Boundary caught an error:', error, errorInfo);
+    logger.error('Error Boundary caught an error:', { error, errorInfo });
   }
 
   handleReset = () => {
@@ -87,8 +88,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   title: {
+    fontFamily: 'Poppins_700Bold',
     fontSize: 24,
-    fontWeight: '700',
     color: '#111827',
     marginTop: 24,
     marginBottom: 12,
@@ -123,8 +124,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
+    fontFamily: 'Poppins_600SemiBold',
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
   },
 });

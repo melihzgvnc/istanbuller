@@ -3,6 +3,8 @@
  * This is necessary because Metro bundler requires static require() calls
  */
 
+import { logger } from '@/utils/logger';
+
 export const ATTRACTION_IMAGES: Record<string, any> = {
   'hagiasophia.jpg': require('@/assets/images/attractions/hagiasophia.jpg'),
   'bluemosque.jpg': require('@/assets/images/attractions/bluemosque.jpg'),
@@ -52,7 +54,7 @@ export function getAttractionImage(imagePath: string): number {
   const image = ATTRACTION_IMAGES[filename];
 
   if (!image) {
-    console.warn(`Image not found in mapping: ${filename}, using fallback`);
+    logger.warn(`Image not found in mapping: ${filename}, using fallback`);
     return ATTRACTION_IMAGES['hagiasophia.jpg'];
   }
 

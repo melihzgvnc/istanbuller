@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '@/utils/logger';
 
 export type Language = 'en' | 'tr';
 
@@ -33,7 +34,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
         setLanguageState(saved);
       }
     } catch (error) {
-      console.error('Failed to load language:', error);
+      logger.error('Failed to load language:', error);
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +45,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
       setLanguageState(lang);
     } catch (error) {
-      console.error('Failed to save language:', error);
+      logger.error('Failed to save language:', error);
     }
   };
 
@@ -129,11 +130,13 @@ const translationsEN: Record<string, string> = {
   'district.switchToAuto': 'Switch to Auto',
   'district.chooseManually': 'Choose District Manually',
   'district.chooseDistrict': 'Choose a District',
+  'district.useAutoDetection': 'Use Auto-Detection',
   'district.place': 'place',
   'district.places': 'places',
   'district.keyLandmarks': 'Key Landmarks',
   'district.attractions': 'Attractions',
   'district.distancesFromCenter': 'Distances from district center',
+  'district.distancesFromYourLocation': 'Distances from your location',
   'district.noDistrictTitle': "We couldn't detect your district",
   'district.noDistrictMessage': "You might be outside our covered areas. You can still explore Istanbul by choosing a district manually.",
   'district.gpsTimeoutTitle': 'GPS is taking too long',
@@ -149,6 +152,20 @@ const translationsEN: Record<string, string> = {
   'common.ok': 'OK',
   'common.close': 'Close',
   'common.goBack': 'Go Back',
+  // Error messages
+  'location.permission.request.failed': 'Failed to request location permissions',
+  'location.services.disabled': 'Location services are disabled. Please enable them in your device settings.',
+  'location.permission.denied': 'Location permission not granted',
+  'location.gps.timeout': 'GPS timeout. Please ensure you have a clear view of the sky and try again.',
+  'location.unavailable': 'Unable to determine your location. Please try again.',
+  'location.watch.failed': 'Failed to start location tracking',
+  'attractions.load.failed': 'Failed to load attraction data',
+  'attractions.validation.failed': 'Attraction data validation failed',
+  'attractions.no.valid.data': 'No valid attractions found in data',
+  'districts.validation.failed': 'District data validation failed',
+  'districts.no.valid.data': 'No valid districts found in data',
+  'storage.save.failed': 'Failed to save district selection',
+  'storage.clear.failed': 'Failed to clear district selection',
 };
 
 const translationsTR: Record<string, string> = {
@@ -203,11 +220,13 @@ const translationsTR: Record<string, string> = {
   'district.switchToAuto': 'Otomatiğe Geç',
   'district.chooseManually': 'İlçeyi Manuel Seç',
   'district.chooseDistrict': 'İlçe Seçin',
+  'district.useAutoDetection': 'Otomatik Tespit Kullan',
   'district.place': 'yer',
   'district.places': 'yer',
   'district.keyLandmarks': 'Önemli Yerler',
   'district.attractions': 'Yerler',
   'district.distancesFromCenter': 'İlçe merkezinden mesafeler',
+  'district.distancesFromYourLocation': 'Konumunuzdan mesafeler',
   'district.noDistrictTitle': 'İlçenizi tespit edemedik',
   'district.noDistrictMessage': 'Kapsama alanımızın dışında olabilirsiniz. Yine de manuel olarak bir ilçe seçerek İstanbul\'u keşfedebilirsiniz.',
   'district.gpsTimeoutTitle': 'GPS çok uzun sürüyor',
@@ -223,4 +242,18 @@ const translationsTR: Record<string, string> = {
   'common.ok': 'Tamam',
   'common.close': 'Kapat',
   'common.goBack': 'Geri Dön',
+  // Error messages
+  'location.permission.request.failed': 'Konum izinleri istenemedi',
+  'location.services.disabled': 'Konum servisleri devre dışı. Lütfen cihaz ayarlarınızdan etkinleştirin.',
+  'location.permission.denied': 'Konum izni verilmedi',
+  'location.gps.timeout': 'GPS zaman aşımı. Lütfen gökyüzüne açık bir görüş alanınız olduğundan emin olun ve tekrar deneyin.',
+  'location.unavailable': 'Konumunuz belirlenemiyor. Lütfen tekrar deneyin.',
+  'location.watch.failed': 'Konum takibi başlatılamadı',
+  'attractions.load.failed': 'Cazibe merkezi verileri yüklenemedi',
+  'attractions.validation.failed': 'Cazibe merkezi verisi doğrulaması başarısız',
+  'attractions.no.valid.data': 'Veride geçerli cazibe merkezi bulunamadı',
+  'districts.validation.failed': 'İlçe verisi doğrulaması başarısız',
+  'districts.no.valid.data': 'Veride geçerli ilçe bulunamadı',
+  'storage.save.failed': 'İlçe seçimi kaydedilemedi',
+  'storage.clear.failed': 'İlçe seçimi temizlenemedi',
 };

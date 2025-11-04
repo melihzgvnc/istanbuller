@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@/constants/theme";
 import { Language, useLanguage } from "@/context/LanguageContext";
+import { useResponsive } from "@/hooks/useResponsive";
 import * as Haptics from "expo-haptics";
 import React from "react";
 import {
@@ -29,6 +30,7 @@ export default function LanguageModal({
   onClose,
 }: LanguageModalProps) {
   const { language, setLanguage, t } = useLanguage();
+  const { isTablet, width } = useResponsive();
 
   const handleLanguageChange = async (lang: Language) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -50,9 +52,14 @@ export default function LanguageModal({
     nativeName: string;
     flag: string;
   }[] = [
-    { code: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
-    { code: "tr", name: "Turkish", nativeName: "Türkçe", flag: "🇹🇷" },
-  ];
+      { code: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
+      { code: "tr", name: "Turkish", nativeName: "Türkçe", flag: "🇹🇷" },
+    ];
+
+  // Calculate modal width based on device - keep as dynamic style (depends on device state)
+  const dynamicModalStyle = {
+    width: isTablet ? Math.min(500, width * 0.6) : width * 0.85,
+  };
 
   return (
     <Modal
@@ -63,7 +70,7 @@ export default function LanguageModal({
       statusBarTranslucent
     >
       <Pressable style={styles.backdrop} onPress={handleBackdropPress}>
-        <View style={styles.modalContainer}>
+        <View style={[styles.modalContainer, dynamicModalStyle]}>
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View style={styles.modalContent}>
               {/* Header */}
@@ -104,7 +111,7 @@ export default function LanguageModal({
                         style={[
                           styles.languageSubtext,
                           language === lang.code &&
-                            styles.languageSubtextActive,
+                          styles.languageSubtextActive,
                         ]}
                       >
                         {lang.name}
@@ -134,8 +141,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-    width: "85%",
-    maxWidth: 400,
+    maxWidth: 500,
   },
   modalContent: {
     backgroundColor: Colors.surface,
@@ -156,8 +162,8 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border.light,
   },
   headerTitle: {
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.xl,
-    fontWeight: Typography.fontWeight.bold,
     color: Colors.text.primary,
   },
   closeButton: {
@@ -168,9 +174,9 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
   },
   closeButtonText: {
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.xl,
     color: Colors.text.secondary,
-    fontWeight: Typography.fontWeight.medium,
   },
   languageList: {
     padding: Spacing.base,
@@ -179,7 +185,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: Colors.surface,
-    padding: Spacing.base,
+    padding: Spacing.md,
     borderRadius: BorderRadius.md,
     marginBottom: Spacing.sm,
     borderWidth: 2,
@@ -191,15 +197,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.neutral[50],
   },
   flag: {
-    fontSize: 32,
+    fontSize: 28,
     marginRight: Spacing.md,
   },
   languageInfo: {
     flex: 1,
   },
   languageName: {
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.semibold,
     color: Colors.text.primary,
     marginBottom: 2,
   },

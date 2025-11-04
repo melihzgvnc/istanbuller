@@ -10,6 +10,7 @@ import {
 import { getAttractionsByDistrict } from '@/services/attractionService';
 import { enrichWithDistance, hasSignificantLocationChange } from '@/services/distanceService';
 import { showErrorToast } from '@/utils/toast';
+import { logger } from '@/utils/logger';
 
 /**
  * Global app context type definition
@@ -18,15 +19,15 @@ export interface AppContextType {
   // Location state
   userLocation: Coordinates | null;
   currentDistrict: IstanbulDistrict | null;
-  
+
   // Attractions state
   attractions: AttractionWithDistance[];
-  
+
   // UI state
   loading: boolean;
   error: string | null;
   permissionGranted: boolean;
-  
+
   // Actions
   refreshLocation: () => Promise<void>;
   requestLocationPermission: () => Promise<void>;
@@ -51,15 +52,15 @@ export function AppProvider({ children }: AppProviderProps) {
   // Location state
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [currentDistrict, setCurrentDistrict] = useState<IstanbulDistrict | null>(null);
-  
+
   // Attractions state
   const [attractions, setAttractions] = useState<AttractionWithDistance[]>([]);
-  
+
   // UI state
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
-  
+
   // Track last location used for distance calculations
   const lastCalculatedLocation = useRef<Coordinates | null>(null);
 
@@ -99,7 +100,7 @@ export function AppProvider({ children }: AppProviderProps) {
       }
 
       // Check if location has changed significantly since last calculation
-      const shouldRecalculate = 
+      const shouldRecalculate =
         forceRecalculate ||
         !lastCalculatedLocation.current ||
         hasSignificantLocationChange(
@@ -118,8 +119,8 @@ export function AppProvider({ children }: AppProviderProps) {
       setAttractions(enrichedAttractions);
       lastCalculatedLocation.current = location;
     } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
+      const errorMessage = err instanceof Error
+        ? err.message
         : 'Failed to load attractions';
       setError(errorMessage);
       showErrorToast(errorMessage);
@@ -134,10 +135,10 @@ export function AppProvider({ children }: AppProviderProps) {
     try {
       setLoading(true);
       setError(null);
-      
+
       const granted = await requestPermissions();
       setPermissionGranted(granted);
-      
+
       if (granted) {
         // Automatically get location after permission is granted
         await refreshLocation();
@@ -146,8 +147,8 @@ export function AppProvider({ children }: AppProviderProps) {
         setLoading(false);
       }
     } catch (err) {
-      const errorMessage = err instanceof LocationError 
-        ? err.message 
+      const errorMessage = err instanceof LocationError
+        ? err.message
         : 'Failed to request location permissions';
       setError(errorMessage);
       setLoading(false);
@@ -161,28 +162,28 @@ export function AppProvider({ children }: AppProviderProps) {
     try {
       setLoading(true);
       setError(null);
-      
+
       const coords = await getCurrentLocation();
-      
+
       if (coords) {
         setUserLocation(coords);
-        
+
         // Detect district from coordinates
         const detectedDistrict = getCurrentDistrict(coords);
         setCurrentDistrict(detectedDistrict);
-        
+
         if (!detectedDistrict) {
           setError('You appear to be outside Istanbul districts');
         }
-        
+
         // Load attractions for the new district (force recalculate)
         await loadAttractions(detectedDistrict, coords, true);
       } else {
         setError('Unable to determine your location');
       }
     } catch (err) {
-      const errorMessage = err instanceof LocationError 
-        ? err.message 
+      const errorMessage = err instanceof LocationError
+        ? err.message
         : 'Failed to get your location';
       setError(errorMessage);
     } finally {
@@ -196,10 +197,10 @@ export function AppProvider({ children }: AppProviderProps) {
    */
   const handleLocationUpdate = useCallback((coords: Coordinates) => {
     setUserLocation(coords);
-    
+
     // Detect district from new coordinates
     const detectedDistrict = getCurrentDistrict(coords);
-    
+
     // Update district and reload attractions if district changed
     setCurrentDistrict((prevDistrict) => {
       if (prevDistrict !== detectedDistrict) {
@@ -224,7 +225,7 @@ export function AppProvider({ children }: AppProviderProps) {
       try {
         // Request permissions on mount
         await requestLocationPermission();
-        
+
         // Start watching location if permission granted
         if (permissionGranted) {
           // Watch location with optimizations:
@@ -236,7 +237,7 @@ export function AppProvider({ children }: AppProviderProps) {
           });
         }
       } catch (err) {
-        console.error('Error initializing location:', err);
+        logger.error('Error initializing location:', err);
       }
     };
 
@@ -273,10 +274,10 @@ export function AppProvider({ children }: AppProviderProps) {
  */
 export function useAppContext(): AppContextType {
   const context = useContext(AppContext);
-  
+
   if (context === undefined) {
     throw new Error('useAppContext must be used within an AppProvider');
   }
-  
+
   return context;
 }
